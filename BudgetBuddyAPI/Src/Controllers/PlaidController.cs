@@ -63,11 +63,7 @@ public class PlaidController : ControllerBase
         _db.BankConnections.Add(bank);
         await _db.SaveChangesAsync();
 
-        return Ok(new
-        {
-            bank.Id,
-            bank.InstitutionName
-        });
+        return Ok(new { bank.Id, bank.InstitutionName });
     }
 
     // =========================
@@ -82,132 +78,25 @@ public class PlaidController : ControllerBase
         if (bank == null)
             return NotFound("Bank not found");
 
-        var transactions = _db.Transactions
-            .Where(t => t.BankConnectionId == bankId);
+        var accounts = _db.BankAccounts
+            .Where(a => a.BankConnectionId == bankId);
 
+        var transactions = _db.Transactions
+            .Where(t => t.BankAccount.BankConnectionId == bankId);
+
+        _db.BankAccounts.RemoveRange(accounts);
         _db.Transactions.RemoveRange(transactions);
         _db.BankConnections.Remove(bank);
 
         await _db.SaveChangesAsync();
 
-        return Ok(new { message = "bank + transactions removed" });
-    }
-
-    // =========================
-    // GET BANKS
-    // =========================
-    [HttpGet("[action]")]
-    public async Task<IActionResult> GetBanks()
-    {
-        var banks = await _db.BankConnections
-            .OrderByDescending(x => x.CreatedAt)
-            .ToListAsync();
-
-        return Ok(banks);
-    }
-
-    // =========================
-    // SYNC ENTRYPOINT
-    // =========================
-    private async Task<object> SyncBankAsync(BankConnection bank)
-    {
-        var result = await SyncTransactionsAsync(bank);
-
-        bank.TransactionsCursor = result.cursor;
-        await _db.SaveChangesAsync();
-
-        return new
-        {
-            added = result.added,
-            modified = result.modified,
-            removed = result.removed,
-            cursor = result.cursor
-        };
+        return Ok(new { message = "bank removed" });
     }
 
 
-    // =========================
-    // TRANSACTIONS SYNC (SECOND)
-    // =========================
-    private async Task<(int added, int modified, int removed, string cursor)>
-        SyncTransactionsAsync(BankConnection bank)
-    {
-        int added = 0, modified = 0, removed = 0;
-
-        var cursor = bank.TransactionsCursor;
-        bool hasMore = true;
-
-        var existingSet = await _db.Transactions
-            .Where(x => x.BankConnectionId == bank.Id)
-            .Select(x => x.PlaidTransactionId)
-            .ToHashSetAsync();
-
-
-        while (hasMore)
-        {
-            var res = await _plaid.PostSyncAsync(cursor, bank.AccessToken);
-
-            // ADD
-            foreach (var t in res.added)
-            {
-                if (existingSet.Contains(t.transaction_id))
-                    continue;
-
-
-                _db.Transactions.Add(new Transaction
-                {
-                    PlaidTransactionId = t.transaction_id,
-                    Amount = t.amount,
-                    Name = t.name,
-                    Category = t.category != null ? string.Join(",", t.category) : null,
-                    Date = DateTime.Parse(t.date),
-
-                    BankConnectionId = bank.Id,
-                });
-
-                existingSet.Add(t.transaction_id);
-                added++;
-            }
-
-            // MODIFY
-            foreach (var t in res.modified)
-            {
-                var existing = await _db.Transactions
-                    .FirstOrDefaultAsync(x => x.PlaidTransactionId == t.transaction_id);
-
-                if (existing != null)
-                {
-                    existing.Amount = t.amount;
-                    existing.Name = t.name;
-                    existing.Category = t.category != null ? string.Join(",", t.category) : null;
-                    existing.Date = DateTime.Parse(t.date);
-
-                    modified++;
-                }
-            }
-
-            // REMOVE
-            foreach (var t in res.removed)
-            {
-                var existing = await _db.Transactions
-                    .FirstOrDefaultAsync(x => x.PlaidTransactionId == t.transaction_id);
-
-                if (existing != null)
-                {
-                    _db.Transactions.Remove(existing);
-                    removed++;
-                }
-            }
-
-            cursor = res.next_cursor;
-            hasMore = res.has_more;
-        }
-
-        return (added, modified, removed, cursor);
-    }
 
     // =========================
-    // SYNC ONE BANK
+    // SYNC SINGLE BANK
     // =========================
     [HttpGet("[action]/{bankId}")]
     public async Task<IActionResult> SyncBank(int bankId)
@@ -235,15 +124,18 @@ public class PlaidController : ControllerBase
     public async Task<IActionResult> SyncAllBanks()
     {
         var banks = await _db.BankConnections.ToListAsync();
+
         var results = new List<object>();
 
         foreach (var bank in banks)
         {
+            var result = await SyncBankAsync(bank);
+
             results.Add(new
             {
                 bank.Id,
                 bank.InstitutionName,
-                result = await SyncBankAsync(bank)
+                result
             });
         }
 
@@ -256,77 +148,168 @@ public class PlaidController : ControllerBase
     }
 
     // =========================
-    // GET TRANSACTIONS (BANK)
+    // FULL SYNC (ACCOUNTS + TRANSACTIONS)
     // =========================
-    [HttpGet("[action]/{bankId}")]
-    public async Task<IActionResult> GetTransactionsForBank(int bankId)
+    private async Task<object> SyncBankAsync(BankConnection bank)
     {
-        var transactions = await _db.Transactions
-            .Where(t => t.BankConnectionId == bankId)
-            .OrderByDescending(t => t.Date)
-            .Select(t => new
-            {
-                t.Id,
-                t.PlaidTransactionId,
-                t.Name,
-                t.Amount,
-                t.Category,
-                t.Date
-            })
+        // =========================
+        // 1. GET PLAID ACCOUNTS
+        // =========================
+        var accountsRes = await _plaid.GetAccountsAsync(bank.AccessToken);
+
+        var existingAccounts = await _db.BankAccounts
+            .Where(a => a.BankConnectionId == bank.Id)
             .ToListAsync();
 
-        return Ok(transactions);
-    }
+        var existingMap = existingAccounts
+            .ToDictionary(x => x.PlaidAccountId, x => x);
 
-    // =========================
-    // GET TRANSACTIONS (ACCOUNT)
-    // =========================
-    [HttpGet("[action]/{accountId}")]
-    public async Task<IActionResult> GetTransactionsForAccount(int accountId)
-    {
-        var transactions = await _db.Transactions
-            .Where(t => t.AccountId == accountId)
-            .OrderByDescending(t => t.Date)
-            .Select(t => new
+        // =========================
+        // UPSERT ACCOUNTS
+        // =========================
+        foreach (var acc in accountsRes.accounts)
+        {
+            if (existingMap.TryGetValue(acc.account_id, out var existing))
             {
-                t.Id,
-                t.PlaidTransactionId,
-                t.Name,
-                t.Amount,
-                t.Category,
-                t.Date
-            })
-            .ToListAsync();
-
-        return Ok(transactions);
-    }
-
-    // =========================
-    // GET ALL TRANSACTIONS
-    // =========================
-    [HttpGet("[action]")]
-    public async Task<IActionResult> GetAllTransactions()
-    {
-        var transactions = await _db.Transactions
-            .Include(t => t.BankConnection)
-            .OrderByDescending(t => t.Date)
-            .Select(t => new
+                existing.Name = acc.name;
+                existing.Type = acc.type;
+                existing.Subtype = acc.subtype;
+                existing.Balance = acc.balances?.current;
+            }
+            else
             {
-                t.Id,
-                t.PlaidTransactionId,
-                t.Name,
-                t.Amount,
-                t.Category,
-                t.Date,
-                bank = new
+                _db.BankAccounts.Add(new BankAccount
                 {
-                    t.BankConnectionId,
-                    t.BankConnection.InstitutionName
-                }
-            })
-            .ToListAsync();
+                    PlaidAccountId = acc.account_id,
+                    Name = acc.name,
+                    Type = acc.type,
+                    Subtype = acc.subtype,
+                    Balance = acc.balances?.current,
+                    BankConnectionId = bank.Id
+                });
+            }
+        }
 
-        return Ok(transactions);
+        // =========================
+        // REMOVE MISSING ACCOUNTS
+        // =========================
+        var plaidAccountIds = accountsRes.accounts
+            .Select(a => a.account_id)
+            .ToHashSet();
+
+        var toRemove = existingAccounts
+            .Where(a => !plaidAccountIds.Contains(a.PlaidAccountId))
+            .ToList();
+
+        _db.BankAccounts.RemoveRange(toRemove);
+
+        await _db.SaveChangesAsync();
+
+        // =========================
+        // RELOAD ACCOUNT MAP
+        // =========================
+        var accountsMap = await _db.BankAccounts
+            .Where(a => a.BankConnectionId == bank.Id)
+            .ToDictionaryAsync(x => x.PlaidAccountId, x => x.Id);
+
+        // =========================
+        // SYNC TRANSACTIONS
+        // =========================
+        var txResult = await SyncTransactionsAsync(bank, accountsMap);
+
+        bank.TransactionsCursor = txResult.cursor;
+        await _db.SaveChangesAsync();
+
+        return new
+        {
+            accounts = accountsMap.Count,
+            txResult.added,
+            txResult.modified,
+            txResult.removed
+        };
+    }
+
+    // =========================
+    // TRANSACTION SYNC (OPTIMIZED)
+    // =========================
+    private async Task<(int added, int modified, int removed, string cursor)>
+        SyncTransactionsAsync(BankConnection bank, Dictionary<string, int> accountsMap)
+    {
+        int added = 0, modified = 0, removed = 0;
+
+        string cursor = bank.TransactionsCursor ?? "";
+        bool hasMore = true;
+
+        var txMap = await _db.Transactions
+            .Where(x => x.BankAccount.BankConnectionId == bank.Id)
+            .ToDictionaryAsync(x => x.PlaidTransactionId);
+
+        var newTransactions = new List<Transaction>();
+
+        while (hasMore)
+        {
+            var res = await _plaid.PostSyncAsync(cursor, bank.AccessToken);
+
+            // ADD
+            foreach (var t in res.added)
+            {
+                if (txMap.ContainsKey(t.transaction_id))
+                    continue;
+
+                if (!accountsMap.TryGetValue(t.account_id, out var accountId))
+                    continue;
+
+                var entity = new Transaction
+                {
+                    PlaidTransactionId = t.transaction_id,
+                    Amount = t.amount,
+                    Name = t.name,
+                    Category = t.category != null ? string.Join(",", t.category) : null,
+                    Date = DateTime.ParseExact(t.date, "yyyy-MM-dd", null),
+                    BankAccountId = accountId
+                };
+
+                newTransactions.Add(entity);
+                txMap[t.transaction_id] = entity;
+
+                added++;
+            }
+
+            // MODIFY
+            foreach (var t in res.modified)
+            {
+                if (txMap.TryGetValue(t.transaction_id, out var existing))
+                {
+                    existing.Amount = t.amount;
+                    existing.Name = t.name;
+                    existing.Category = t.category != null ? string.Join(",", t.category) : null;
+                    existing.Date = DateTime.ParseExact(t.date, "yyyy-MM-dd", null);
+
+                    modified++;
+                }
+            }
+
+            // REMOVE
+            foreach (var t in res.removed)
+            {
+                if (txMap.TryGetValue(t.transaction_id, out var existing))
+                {
+                    _db.Transactions.Remove(existing);
+                    txMap.Remove(t.transaction_id);
+                    removed++;
+                }
+            }
+
+            cursor = res.next_cursor;
+            hasMore = res.has_more;
+        }
+
+        if (newTransactions.Count > 0)
+            _db.Transactions.AddRange(newTransactions);
+
+        await _db.SaveChangesAsync();
+
+        return (added, modified, removed, cursor);
     }
 
 }

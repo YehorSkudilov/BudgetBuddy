@@ -17,6 +17,41 @@ namespace BudgetBuddyAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.6");
 
+            modelBuilder.Entity("BudgetBuddyAPI.BankAccount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("Balance")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("BankConnectionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PlaidAccountId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Subtype")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BankConnectionId");
+
+                    b.ToTable("BankAccounts");
+                });
+
             modelBuilder.Entity("BudgetBuddyAPI.BankConnection", b =>
                 {
                     b.Property<int>("Id")
@@ -52,13 +87,10 @@ namespace BudgetBuddyAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AccountId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<decimal>("Amount")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("BankConnectionId")
+                    b.Property<int>("BankAccountId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Category")
@@ -77,20 +109,41 @@ namespace BudgetBuddyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BankConnectionId");
+                    b.HasIndex("BankAccountId");
 
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("BudgetBuddyAPI.Transaction", b =>
+            modelBuilder.Entity("BudgetBuddyAPI.BankAccount", b =>
                 {
                     b.HasOne("BudgetBuddyAPI.BankConnection", "BankConnection")
-                        .WithMany()
+                        .WithMany("Accounts")
                         .HasForeignKey("BankConnectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("BankConnection");
+                });
+
+            modelBuilder.Entity("BudgetBuddyAPI.Transaction", b =>
+                {
+                    b.HasOne("BudgetBuddyAPI.BankAccount", "BankAccount")
+                        .WithMany("Transactions")
+                        .HasForeignKey("BankAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BankAccount");
+                });
+
+            modelBuilder.Entity("BudgetBuddyAPI.BankAccount", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("BudgetBuddyAPI.BankConnection", b =>
+                {
+                    b.Navigation("Accounts");
                 });
 #pragma warning restore 612, 618
         }

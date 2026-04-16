@@ -12,8 +12,6 @@ public class Transaction
 
     public DateTime Date { get; set; }
 
-    public int BankConnectionId { get; set; }
-    public BankConnection BankConnection { get; set; } = null!;
-
-    public int AccountId { get; set; }
+    public int BankAccountId { get; set; }
+    public BankAccount BankAccount { get; set; } = null!;
 }

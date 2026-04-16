@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BudgetBuddyAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class swddfedsdfsddf : Migration
+    public partial class swddfdedsdfsddf : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,6 +29,30 @@ namespace BudgetBuddyAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BankAccounts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PlaidAccountId = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Type = table.Column<string>(type: "TEXT", nullable: false),
+                    Subtype = table.Column<string>(type: "TEXT", nullable: false),
+                    Balance = table.Column<decimal>(type: "TEXT", nullable: true),
+                    BankConnectionId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BankAccounts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BankAccounts_BankConnections_BankConnectionId",
+                        column: x => x.BankConnectionId,
+                        principalTable: "BankConnections",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Transactions",
                 columns: table => new
                 {
@@ -39,24 +63,28 @@ namespace BudgetBuddyAPI.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Category = table.Column<string>(type: "TEXT", nullable: true),
                     Date = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    BankConnectionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    AccountId = table.Column<int>(type: "INTEGER", nullable: false)
+                    BankAccountId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Transactions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Transactions_BankConnections_BankConnectionId",
-                        column: x => x.BankConnectionId,
-                        principalTable: "BankConnections",
+                        name: "FK_Transactions_BankAccounts_BankAccountId",
+                        column: x => x.BankAccountId,
+                        principalTable: "BankAccounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transactions_BankConnectionId",
-                table: "Transactions",
+                name: "IX_BankAccounts_BankConnectionId",
+                table: "BankAccounts",
                 column: "BankConnectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_BankAccountId",
+                table: "Transactions",
+                column: "BankAccountId");
         }
 
         /// <inheritdoc />
@@ -64,6 +92,9 @@ namespace BudgetBuddyAPI.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Transactions");
+
+            migrationBuilder.DropTable(
+                name: "BankAccounts");
 
             migrationBuilder.DropTable(
                 name: "BankConnections");

@@ -8,16 +8,23 @@ public class AppDbContext : DbContext
         : base(options) { }
 
     public DbSet<BankConnection> BankConnections => Set<BankConnection>();
+    public DbSet<BankAccount> BankAccounts => Set<BankAccount>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Transaction>()
-            .HasOne(t => t.BankConnection)
-            .WithMany()
-            .HasForeignKey(t => t.BankConnectionId)
+        modelBuilder.Entity<BankConnection>()
+            .HasMany(b => b.Accounts)
+            .WithOne(a => a.BankConnection)
+            .HasForeignKey(a => a.BankConnectionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<BankAccount>()
+            .HasMany(a => a.Transactions)
+            .WithOne(t => t.BankAccount)
+            .HasForeignKey(t => t.BankAccountId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
