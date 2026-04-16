@@ -1,5 +1,7 @@
-﻿namespace BudgetBuddyAPI;
+﻿using BudgetBuddyAPI;
+using Microsoft.EntityFrameworkCore;
 
+[Index(nameof(PlaidTransactionId), IsUnique = true)]
 public class Transaction
 {
     public int Id { get; set; }

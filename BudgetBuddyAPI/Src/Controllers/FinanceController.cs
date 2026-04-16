@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 
 namespace BudgetBuddyAPI;
 
@@ -14,11 +15,31 @@ public class FinanceController : ControllerBase
         _db = db;
     }
 
-    [HttpGet("total-balance")]
+    private decimal Normalize(decimal amount, BankAccount account)
+    {
+        var type = account.Type?.ToLowerInvariant() ?? "";
+        var subtype = account.Subtype?.ToLowerInvariant() ?? "";
+
+        var isLiability =
+            type.Contains("credit") ||
+            type.Contains("loan");
+
+
+        if (!isLiability)
+            return amount;
+
+
+        return amount > 0 ? -amount : Math.Abs(amount);
+    }
+
+    [HttpGet("[action]")]
     public async Task<IActionResult> GetTotalBalance()
     {
-        var total = await _db.BankAccounts
-            .SumAsync(a => (decimal?)a.Balance) ?? 0;
+        var accounts = await _db.BankAccounts.ToListAsync();
+
+        decimal total = accounts.Sum(a =>
+            Normalize(a.Balance ?? 0, a)
+        );
 
         return Ok(new
         {
@@ -26,31 +47,38 @@ public class FinanceController : ControllerBase
         });
     }
 
-    [HttpGet("total-balance-by-bank")]
-    public async Task<IActionResult> GetTotalBalanceByBank()
+
+    [HttpGet("[action]/{bankId}")]
+    public async Task<IActionResult> GetTotalBalanceByBank(int bankId)
     {
-        var result = await _db.BankAccounts
+        var accounts = await _db.BankAccounts
+            .Where(a => a.BankConnectionId == bankId)
             .Include(a => a.BankConnection)
-            .GroupBy(a => new
-            {
-                a.BankConnectionId,
-                a.BankConnection.InstitutionName
-            })
-            .Select(g => new
-            {
-                bankId = g.Key.BankConnectionId,
-                bankName = g.Key.InstitutionName,
-                totalBalance = g.Sum(x => x.Balance)
-            })
             .ToListAsync();
 
-        return Ok(result);
+        if (!accounts.Any())
+        {
+            return NotFound("No accounts found for this bank.");
+        }
+
+        var bankName = accounts.First().BankConnection.InstitutionName;
+
+        var totalBalance = accounts.Sum(a =>
+            Normalize(a.Balance ?? 0, a)
+        );
+
+        return Ok(new
+        {
+            bankId,
+            bankName,
+            totalBalance
+        });
     }
 
     // =========================
     // GET CURRENT MONTH SUMMARY
     // =========================
-    [HttpGet("monthly-summary")]
+    [HttpGet("[action]")]
     public async Task<IActionResult> GetRangeSummary(
      [FromQuery] DateTime? from,
      [FromQuery] DateTime? to)

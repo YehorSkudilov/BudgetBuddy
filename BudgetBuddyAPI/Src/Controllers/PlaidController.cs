@@ -34,28 +34,55 @@ public class PlaidController : ControllerBase
         return Ok(res);
     }
 
-    // =========================
-    // EXCHANGE PUBLIC TOKEN → SAVE BANK
-    // =========================
     [HttpPost("[action]")]
     public async Task<IActionResult> Exchange([FromBody] ExchangeTokenRequest req)
     {
         var res = await _plaid.ExchangePublicTokenAsync(req);
 
+        string institutionId = "";
         string institutionName = "Unknown";
 
         try
         {
             var item = await _plaid.GetItemAsync(res.access_token);
-            var institution = await _plaid.GetInstitutionAsync(item.item.institution_id);
+
+            institutionId = item.item.institution_id;
+
+            var institution = await _plaid.GetInstitutionAsync(institutionId);
             institutionName = institution.institution.name;
         }
         catch { }
+
+        // =========================
+        // 🔥 PREVENT DUPLICATES HERE
+        // =========================
+        var existing = await _db.BankConnections
+            .FirstOrDefaultAsync(x =>
+                x.InstitutionId == institutionId
+            );
+
+        if (existing != null)
+        {
+            // Optional: update tokens if re-linked
+            existing.AccessToken = res.access_token;
+            existing.ItemId = res.item_id;
+            existing.InstitutionName = institutionName;
+
+            await _db.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Bank already exists, updated connection",
+                existing.Id,
+                existing.InstitutionName
+            });
+        }
 
         var bank = new BankConnection
         {
             AccessToken = res.access_token,
             ItemId = res.item_id,
+            InstitutionId = institutionId,
             InstitutionName = institutionName,
             CreatedAt = DateTime.UtcNow
         };

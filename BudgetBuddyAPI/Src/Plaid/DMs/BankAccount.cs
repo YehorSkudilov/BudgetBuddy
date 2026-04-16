@@ -1,5 +1,8 @@
-﻿namespace BudgetBuddyAPI;
+﻿using Microsoft.EntityFrameworkCore;
 
+namespace BudgetBuddyAPI;
+
+[Index(nameof(BankConnectionId), nameof(PlaidAccountId), IsUnique = true)]
 public class BankAccount
 {
     public int Id { get; set; }
