@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BudgetBuddy/BudgetBuddy.csproj" Id="50ac1fa7-5ccd-4000-93d6-d81c72af4f6c" />
+  <Project Path="BudgetBuddyAPI/BudgetBuddyAPI.csproj" />
+</Solution>
