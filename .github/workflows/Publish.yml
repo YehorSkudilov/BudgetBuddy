@@ -109,7 +109,7 @@ jobs:
           if (!(Test-Path $keystore)) {
             Write-Host "Keystore folder contents:"
             Get-ChildItem "${{ github.workspace }}\BudgetBuddy\Publish\Android\keystore"
-            throw "Keystore not found at $keystore"
+            throw "Keystore not found"
           }
 
           dotnet publish "${{ env.PROJECT_PATH }}" `
@@ -123,14 +123,14 @@ jobs:
             "/p:AndroidSigningStorePass=${{ secrets.ANDROID_KEYSTORE_PASS }}"
 
       # =========================
-      # FIND AAB (ROBUST SEARCH)
+      # FIND AAB (FIXED + SAFE)
       # =========================
       - name: Find AAB
         id: find_aab
         shell: pwsh
         run: |
           $file = Get-ChildItem -Recurse -Filter *.aab |
-            Where-Object { $_.FullName -match "net10.0-android|Release" } |
+            Where-Object { $_.FullName -like "*Release*" -or $_.FullName -like "*net10.0-android*" } |
             Select-Object -First 1
 
           if ($null -eq $file) {
@@ -138,12 +138,15 @@ jobs:
           }
 
           if ($null -eq $file) {
-            Write-Host "No AAB found in workspace"
-            Get-ChildItem -Recurse | Where-Object { $_.Extension -eq ".aab" }
+            Write-Host "No AAB found"
+            Get-ChildItem -Recurse -Filter *.aab
             throw "AAB not found"
           }
 
-          echo "file=$($file.FullName)" >> $env:GITHUB_OUTPUT
+          # IMPORTANT: convert Windows path to POSIX for Google Play action
+          $posix = $file.FullName -replace "\\", "/"
+
+          echo "file=$posix" >> $env:GITHUB_OUTPUT
 
       # =========================
       # UPLOAD ARTIFACT
@@ -161,7 +164,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-          packageName: com.companyname.budgetbuddy
+          packageName: com.yehorskudilov.budgetbuddy
           releaseFiles: ${{ steps.find_aab.outputs.file }}
           track: alpha
           status: completed
