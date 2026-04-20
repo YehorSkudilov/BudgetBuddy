@@ -4,9 +4,9 @@ permissions:
   contents: write
 
 env:
-  PROJECT_PATH: BudgetBuddy\BudgetBuddy\BudgetBuddy.csproj
+  PROJECT_PATH: BudgetBuddy/BudgetBuddy/BudgetBuddy.csproj
   VERSION_BUMP_PROJECT_PATH: BudgetBuddy/BudgetBuddy.csproj
-  KEYSTORE_PATH: BudgetBuddy\BudgetBuddy\Publish\Android\keystore\budgetbuddy.keystore
+  KEYSTORE_PATH: BudgetBuddy/BudgetBuddy/Publish/Android/keystore/budgetbuddy.keystore
 
 on:
   workflow_dispatch:
