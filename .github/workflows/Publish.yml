@@ -94,6 +94,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: YehorSkudilov/AppSkeleton
+          token: ${{ secrets.APPSKELETON_REPO_TOKEN }}
           path: AppSkeleton
 
       # =========================
