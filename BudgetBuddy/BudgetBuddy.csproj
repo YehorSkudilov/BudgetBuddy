@@ -133,7 +133,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\AppSkeleton\AppSkeleton\AppSkeleton.csproj" />
-	  <ProjectReference Include="..\AppSkeleton\AppSkeleton\AppSkeleton.csproj" />
 	</ItemGroup>
 
 </Project>
