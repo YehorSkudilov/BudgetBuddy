@@ -1,7 +1,6 @@
 name: Publish
 
 env:
-  PRODUCT_NAME: BudgetBuddy
   PROJECT_PATH: BudgetBuddy/BudgetBuddy.csproj
 
 on:
