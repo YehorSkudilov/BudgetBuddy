@@ -99,12 +99,16 @@ jobs:
         run: dotnet workload install maui
 
       # =========================
-      # BUILD AND SIGN
+      # BUILD + SIGNING
       # =========================
       - name: Publish Android
         shell: pwsh
         run: |
           $keystore = "${{ github.workspace }}\${{ env.KEYSTORE_PATH }}"
+
+          if (!(Test-Path $keystore)) {
+            throw "Keystore not found at: $keystore"
+          }
 
           dotnet publish "${{ env.PROJECT_PATH }}" `
             -c Release `
