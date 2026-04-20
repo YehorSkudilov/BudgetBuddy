@@ -1,5 +1,8 @@
 name: Publish
 
+permissions:
+  contents: write
+
 env:
   PROJECT_PATH: BudgetBuddy/BudgetBuddy.csproj
 
