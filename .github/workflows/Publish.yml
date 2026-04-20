@@ -4,7 +4,8 @@ permissions:
   contents: write
 
 env:
-  PROJECT_PATH: BudgetBuddy/BudgetBuddy/BudgetBuddy.csproj
+  PROJECT_PATH: BudgetBuddy\BudgetBuddy\BudgetBuddy.csproj
+  VERSION_BUMP_PROJECT_PATH: BudgetBuddy/BudgetBuddy.csproj
   KEYSTORE_PATH: BudgetBuddy\BudgetBuddy\Publish\Android\keystore\budgetbuddy.keystore
 
 on:
@@ -34,13 +35,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: BudgetBuddy
 
       - name: Bump MAUI version
         id: bump
         run: |
-          FILE="${{ env.PROJECT_PATH }}"
+          FILE="${{ env.VERSION_BUMP_PROJECT_PATH }}"
 
           CURRENT=$(grep -oPm1 "(?<=<ApplicationDisplayVersion>)[^<]+" "$FILE")
 
@@ -75,7 +74,7 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add ${{ env.PROJECT_PATH }}
+          git add ${{ env.VERSION_BUMP_PROJECT_PATH }}
           git commit -m "chore: bump version to ${{ steps.bump.outputs.version }}"
           git push
 
