@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-
+﻿using AppSkeleton;
+using Microsoft.Extensions.Logging;
 namespace BudgetBuddy
 {
     public static class MauiProgram
@@ -7,12 +7,14 @@ namespace BudgetBuddy
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
+
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddCIcons();
                 });
 
 #if DEBUG

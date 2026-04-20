@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:BudgetBuddy"
+             xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
+             x:Class="BudgetBuddy.TransactionsPage">
+    <Grid x:Name="MainGrid" RowDefinitions="auto, auto, *">
+        <Border Padding="10" Stroke="#40ffffff" StrokeThickness="1" Background="#20ffffff">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="30"/>
+            </Border.StrokeShape>
+
+            <VerticalStackLayout Spacing="10" VerticalOptions="Center">
+                <Label FontSize="20" HorizontalOptions="Center" Text="Spent: $500"/>
+                <BoxView BackgroundColor="#40ffffff" HeightRequest="1"/>
+                <Label FontSize="20" HorizontalOptions="Center" Text="Income: $500"/>
+                <BoxView BackgroundColor="#40ffffff" HeightRequest="1"/>
+                <Label FontSize="20" HorizontalOptions="Center" Text="Left: $500"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <VerticalStackLayout Spacing="10" Grid.Row="1">
+            <local:RangePickerView HorizontalOptions="Center"/>
+            <BoxView HeightRequest="1"/>
+        </VerticalStackLayout>
+
+        <local:TransactionListView Margin="5,0" Grid.Row="2" Items="{Binding TransactionsGroups}" />
+    </Grid>
+</ContentView>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BudgetBuddy.TransactionListView">
+    <Grid x:Name="MainGrid">
+        <CollectionView ItemsSource="{Binding Items}"
+                IsGrouped="True">
+
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical"
+                           ItemSpacing="10" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.GroupHeaderTemplate>
+                <DataTemplate>
+                    <Label Text="{Binding DateTime, StringFormat='{0:MMM dd yyyy}'}"
+                    FontSize="14"
+                   FontAttributes="Bold"
+                   Padding="0,20,0,0"/>
+                </DataTemplate>
+            </CollectionView.GroupHeaderTemplate>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="15,0,0,0" ColumnDefinitions="*,Auto" RowDefinitions="auto,5">
+                        <BoxView Grid.Row="1" VerticalOptions="End" HeightRequest="1" Grid.ColumnSpan="3"/>
+
+                        <HorizontalStackLayout Spacing="5">
+
+                            <VerticalStackLayout>
+                                <Label Grid.Row="1"
+                                   VerticalOptions="Center"
+                               Text="{Binding DateTime, StringFormat='{0:hh:mm tt}'}"
+                               FontSize="11"
+                               Opacity="0.5" />
+                                <Label Text="{Binding Title}"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+
+                            <Label Text="{Binding Subtitle}"
+                               FontSize="12"
+                               Opacity="0.6"/>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+
+                        <!-- Right side (amount) -->
+                        <Label VerticalOptions="Center" Grid.Column="1"
+                           Text="{Binding Amount, StringFormat='{0:C}'}"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{Binding IsIncome, Converter={StaticResource BoolToColorConverter}}"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentView>

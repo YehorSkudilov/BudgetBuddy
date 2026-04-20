@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BudgetBuddy.HomePage">
+    <Grid RowDefinitions="auto, *">
+        <Border Padding="10" Stroke="#40ffffff" StrokeThickness="1" Background="#20ffffff">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="30"/>
+            </Border.StrokeShape>
+
+            <VerticalStackLayout Spacing="10" VerticalOptions="Center">
+                <Label FontSize="20" HorizontalOptions="Center" Text="Money: $500"/>
+                <BoxView BackgroundColor="#40ffffff" HeightRequest="1"/>
+                <Label FontSize="20" HorizontalOptions="Center" Text="Debt: $500"/>
+                <BoxView BackgroundColor="#40ffffff" HeightRequest="1"/>
+                <Label FontSize="20" HorizontalOptions="Center" Text="Net: $500"/>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentView>
