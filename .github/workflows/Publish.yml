@@ -5,7 +5,7 @@ permissions:
 
 env:
   PROJECT_PATH: BudgetBuddy/BudgetBuddy.csproj
-  KEYSTORE_PATH: BudgetBuddy\Publish\Android\keystore\budgetbuddy.keystore
+  KEYSTORE_PATH: Publish\Android\keystore\budgetbuddy.keystore
 
 on:
   workflow_dispatch:
