@@ -4,7 +4,7 @@ permissions:
   contents: write
 
 env:
-  PROJECT_PATH: BudgetBuddy/BudgetBuddy.csproj
+  PROJECT_PATH: BudgetBuddy/BudgetBuddy/BudgetBuddy.csproj
   KEYSTORE_PATH: BudgetBuddy\BudgetBuddy\Publish\Android\keystore\budgetbuddy.keystore
 
 on:
@@ -34,6 +34,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: BudgetBuddy
 
       - name: Bump MAUI version
         id: bump
