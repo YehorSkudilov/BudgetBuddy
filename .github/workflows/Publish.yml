@@ -107,8 +107,9 @@ jobs:
           $keystore = "${{ github.workspace }}\${{ env.KEYSTORE_PATH }}"
 
           if (!(Test-Path $keystore)) {
+            Write-Host "Keystore folder contents:"
             Get-ChildItem "${{ github.workspace }}\BudgetBuddy\Publish\Android\keystore"
-            throw "Keystore not found at: $keystore"
+            throw "Keystore not found at $keystore"
           }
 
           dotnet publish "${{ env.PROJECT_PATH }}" `
@@ -122,16 +123,24 @@ jobs:
             "/p:AndroidSigningStorePass=${{ secrets.ANDROID_KEYSTORE_PASS }}"
 
       # =========================
-      # FIND AAB
+      # FIND AAB (ROBUST SEARCH)
       # =========================
-      - name: Locate AAB
+      - name: Find AAB
         id: find_aab
         shell: pwsh
         run: |
-          $file = Get-ChildItem -Recurse -Filter *.aab | Select-Object -First 1
+          $file = Get-ChildItem -Recurse -Filter *.aab |
+            Where-Object { $_.FullName -match "net10.0-android|Release" } |
+            Select-Object -First 1
 
           if ($null -eq $file) {
-            throw "No AAB found"
+            $file = Get-ChildItem -Recurse -Filter *.aab | Select-Object -First 1
+          }
+
+          if ($null -eq $file) {
+            Write-Host "No AAB found in workspace"
+            Get-ChildItem -Recurse | Where-Object { $_.Extension -eq ".aab" }
+            throw "AAB not found"
           }
 
           echo "file=$($file.FullName)" >> $env:GITHUB_OUTPUT
