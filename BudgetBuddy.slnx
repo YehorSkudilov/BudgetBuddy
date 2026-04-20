@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="AppSkeleton/AppSkeleton/AppSkeleton.csproj" />
+  <Project Path="../AppSkeleton/AppSkeleton/AppSkeleton.csproj" />
   <Project Path="BudgetBuddy/BudgetBuddy.csproj" Id="50ac1fa7-5ccd-4000-93d6-d81c72af4f6c">
     <Deploy Solution="Debug|*" />
   </Project>
