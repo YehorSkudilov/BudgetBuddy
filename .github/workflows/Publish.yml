@@ -85,7 +85,16 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout BudgetBuddy
+        uses: actions/checkout@v4
+        with:
+          path: BudgetBuddy
+
+      - name: Checkout AppSkeleton
+        uses: actions/checkout@v4
+        with:
+          repository: YehorSkudilov/AppSkeleton
+          path: AppSkeleton
 
       # =========================
       # .NET + MAUI
