@@ -107,6 +107,7 @@ jobs:
           $keystore = "${{ github.workspace }}\${{ env.KEYSTORE_PATH }}"
 
           if (!(Test-Path $keystore)) {
+            Get-ChildItem "${{ github.workspace }}\BudgetBuddy\Publish\Android\keystore"
             throw "Keystore not found at: $keystore"
           }
 
@@ -121,13 +122,18 @@ jobs:
             "/p:AndroidSigningStorePass=${{ secrets.ANDROID_KEYSTORE_PASS }}"
 
       # =========================
-      # FIND OUTPUT
+      # FIND AAB
       # =========================
       - name: Locate AAB
         id: find_aab
         shell: pwsh
         run: |
           $file = Get-ChildItem -Recurse -Filter *.aab | Select-Object -First 1
+
+          if ($null -eq $file) {
+            throw "No AAB found"
+          }
+
           echo "file=$($file.FullName)" >> $env:GITHUB_OUTPUT
 
       # =========================
@@ -138,6 +144,18 @@ jobs:
         with:
           name: android-aab
           path: ${{ steps.find_aab.outputs.file }}
+
+      # =============================
+      # GOOGLE PLAY UPLOAD (FIXED)
+      # =============================
+      - name: Upload to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          packageName: com.companyname.budgetbuddy
+          releaseFiles: ${{ steps.find_aab.outputs.file }}
+          track: alpha
+          status: completed
 
 # ==================================================
 # RELEASE
