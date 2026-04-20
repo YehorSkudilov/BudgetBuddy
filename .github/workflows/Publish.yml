@@ -39,10 +39,8 @@ jobs:
         run: |
           FILE="${{ env.PROJECT_PATH }}"
 
-          # Read current display version
           CURRENT=$(grep -oPm1 "(?<=<ApplicationDisplayVersion>)[^<]+" "$FILE")
 
-          # Normalize version (1.0 -> 1.0.0)
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
           PATCH=${PATCH:-0}
 
@@ -74,8 +72,6 @@ jobs:
           esac
 
           NEW="$MAJOR.$MINOR.$PATCH"
-
-          # Android versionCode (must be int and increasing)
           VERSION_CODE=$((MAJOR * 1000000 + MINOR * 1000 + PATCH))
 
           if [ "$BUMPED" = true ]; then
@@ -111,50 +107,62 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
-      # Install .NET 10
+      # =========================
+      # .NET + MAUI
+      # =========================
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      # Install MAUI
       - name: Install MAUI workload
         run: dotnet workload install maui
 
-      # Decode keystore
+      # =========================
+      # FIXED KEYSTORE DECODE (WINDOWS SAFE)
+      # =========================
       - name: Decode Keystore
+        shell: pwsh
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+          $bytes = [Convert]::FromBase64String("${{ secrets.ANDROID_KEYSTORE_BASE64 }}")
+          [IO.File]::WriteAllBytes("keystore.jks", $bytes)
 
-      # Publish AAB
+      # =========================
+      # BUILD AAB
+      # =========================
       - name: Publish Android
         run: |
-          dotnet publish ${{ env.PROJECT_PATH }} \
-            -c Release \
-            -f net10.0-android \
-            /p:AndroidPackageFormat=aab \
-            /p:AndroidKeyStore=true \
-            /p:AndroidSigningKeyStore=keystore.jks \
-            /p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEYALIAS_NAME }} \
-            /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEYALIAS_PASS }} \
+          dotnet publish ${{ env.PROJECT_PATH }} `
+            -c Release `
+            -f net10.0-android `
+            /p:AndroidPackageFormat=aab `
+            /p:AndroidKeyStore=true `
+            /p:AndroidSigningKeyStore=keystore.jks `
+            /p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEYALIAS_NAME }} `
+            /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEYALIAS_PASS }} `
             /p:AndroidSigningStorePass=${{ secrets.ANDROID_KEYSTORE_PASS }}
 
-      # Find output
+      # =========================
+      # FIND OUTPUT
+      # =========================
       - name: Locate AAB
         id: find_aab
         run: |
-          FILE=$(find . -name "*.aab" | head -n 1)
-          echo "Found AAB: $FILE"
-          echo "file=$FILE" >> $GITHUB_OUTPUT
+          $file = Get-ChildItem -Recurse -Filter *.aab | Select-Object -First 1
+          echo "file=$($file.FullName)" >> $env:GITHUB_OUTPUT
 
-      # Upload artifact
+      # =========================
+      # UPLOAD ARTIFACT
+      # =========================
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-aab
           path: ${{ steps.find_aab.outputs.file }}
 
-      # Upload to Google Play
+      # =========================
+      # GOOGLE PLAY UPLOAD
+      # =========================
       - name: Upload to Google Play
         uses: r0adkll/upload-google-play@v1
         with:
