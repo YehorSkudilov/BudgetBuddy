@@ -27,7 +27,7 @@ public partial class CAppShell : ContentPage
 
         CNavIconItems = new ObservableCollection<CNavItem>
         {
-            new CNavItem { Glyph = "savings", Color = Colors.White, Action = () =>{SetContent(new BudgetPage(), "Goals"); } },
+            new CNavItem { Glyph = "savings", Color = Colors.White, Action = () =>{SetContent(new GoalsPage(), "Goals"); } },
             new CNavItem { Glyph = "receipt", Color = Colors.White, Action = () =>{SetContent(new TransactionsPage(), "Transactions"); } },
             new CNavItem { Glyph = "home", Color = Colors.White, Action = () =>{SetContent(new HomePage(), "Home"); } },
             new CNavItem { Glyph = "account_balance", Color = Colors.White, Action = () =>{SetContent(new BanksPage(), "Banks"); } },

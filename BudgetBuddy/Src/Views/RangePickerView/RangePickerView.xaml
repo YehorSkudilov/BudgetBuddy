@@ -6,6 +6,7 @@
         <HorizontalStackLayout>
             <HorizontalStackLayout>
                 <DatePicker/>
+                <TimePicker/>
             </HorizontalStackLayout>
             
             <Image>
@@ -16,6 +17,7 @@
 
             <HorizontalStackLayout>
                 <DatePicker/>
+                <TimePicker/>
             </HorizontalStackLayout>
         </HorizontalStackLayout>
     </Grid>

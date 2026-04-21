@@ -14,23 +14,19 @@
     <Grid x:Name="MainGrid">
         <CollectionView ItemsSource="{Binding Items}" IsGrouped="True">
 
-            <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Vertical"
-                           ItemSpacing="10" />
-            </CollectionView.ItemsLayout>
-
             <CollectionView.GroupHeaderTemplate>
                 <DataTemplate>
-                    <Label Text="{Binding DateTime, StringFormat='{0:MMM dd yyyy}'}"
+                    <Grid Margin="0,20,0,5">
+                        <Label Text="{Binding DateTime, StringFormat='{0:MMM dd yyyy}'}"
                     FontSize="14"
-                   FontAttributes="Bold"
-                   Padding="0,20,0,0"/>
+                   FontAttributes="Bold"/>
+                    </Grid>
                 </DataTemplate>
             </CollectionView.GroupHeaderTemplate>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="15,0,0,0" ColumnDefinitions="*,Auto" RowDefinitions="auto,5">
+                    <Grid Padding="15,0,0,10" ColumnDefinitions="*,Auto" RowDefinitions="auto,5">
                         <BoxView Grid.Row="1" VerticalOptions="End" HeightRequest="1" Grid.ColumnSpan="3"/>
 
                         <HorizontalStackLayout Spacing="5">
@@ -52,7 +48,7 @@
                         </HorizontalStackLayout>
 
                         <Label VerticalOptions="Center" Grid.Column="1"
-                           Text="{Binding Amount, StringFormat='{0:C}'}"
+                           Text="{Binding Amount, StringFormat='{0:$#,0.00;-$#,0.00;$0.00}'}"
                            FontSize="16"
                            FontAttributes="Bold"
                            TextColor="{Binding IsIncome, Converter={StaticResource BoolToColorConverter}}"/>

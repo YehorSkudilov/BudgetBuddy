@@ -3,9 +3,9 @@
              xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
              x:Class="BudgetBuddy.TopBar">
     <Grid x:Name="MainGrid" Margin="5,0" ColumnDefinitions="auto, *, auto">
-        <AppSkeleton:CButton IconFontFamily="OutlinedIcons" IconHeightRequest="30" IconWidthRequest="30" IconPadding="7" Icon="notifications"/>
+        <AppSkeleton:CButton IconFontFamily="OutlinedIcons" IconHeightRequest="30" IconWidthRequest="30" IconPadding="8" Icon="notifications"/>
         <Label HorizontalOptions="Center" VerticalOptions="Center" FontSize="30" Grid.Column="1" Text="{Binding PageName}"/>
-        <AppSkeleton:CButton IconFontFamily="OutlinedIcons" Grid.Column="2" IconHeightRequest="30" IconWidthRequest="30" IconPadding="7" Icon="settings"/>
+        <AppSkeleton:CButton IconFontFamily="OutlinedIcons" Grid.Column="2" IconHeightRequest="30" IconWidthRequest="30" IconPadding="8" Icon="settings"/>
 
     </Grid>
 </ContentView>
