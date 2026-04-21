@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:BudgetBuddy"
              x:Class="BudgetBuddy.TransactionListView">
+
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <local:BoolToColorConverter x:Key="BoolToColorConverter"/>
+        </ResourceDictionary>
+    </ContentView.Resources>
+    
+    
     <Grid x:Name="MainGrid">
-        <CollectionView ItemsSource="{Binding Items}"
-                IsGrouped="True">
+        <CollectionView ItemsSource="{Binding Items}" IsGrouped="True">
 
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical"
@@ -43,7 +51,6 @@
                             </VerticalStackLayout>
                         </HorizontalStackLayout>
 
-                        <!-- Right side (amount) -->
                         <Label VerticalOptions="Center" Grid.Column="1"
                            Text="{Binding Amount, StringFormat='{0:C}'}"
                            FontSize="16"
