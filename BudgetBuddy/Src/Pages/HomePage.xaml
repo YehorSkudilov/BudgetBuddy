@@ -3,25 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
              x:Class="BudgetBuddy.HomePage">
-    <Grid x:Name="MainGrid" RowDefinitions="auto, *">
+    <Grid x:Name="MainGrid" RowDefinitions="150, *">
         <Border Padding="10" Stroke="#40ffffff" StrokeThickness="1" Background="#20ffffff">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="30"/>
             </Border.StrokeShape>
 
-            <VerticalStackLayout Spacing="10" VerticalOptions="Center">
-                <Label FontSize="20" HorizontalOptions="Center" Text="Money: $500"/>
-                <BoxView BackgroundColor="#40ffffff" HeightRequest="1"/>
-                <Label FontSize="20" HorizontalOptions="Center" Text="Debt: $500"/>
-                <BoxView BackgroundColor="#40ffffff" HeightRequest="1"/>
-                <Label FontSize="20" HorizontalOptions="Center" Text="Net: $500"/>
-            </VerticalStackLayout>
+            <Grid>
+                <AppSkeleton:CChart>
+                    <AppSkeleton:CChart.Chart>
+                        <AppSkeleton:CBarChart IsHorizontal="False" Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.MoneyValues}"/>
+                    </AppSkeleton:CChart.Chart>
+                </AppSkeleton:CChart>
+            </Grid>
         </Border>
 
         <Grid Grid.Row="1">
             <AppSkeleton:CChart>
                 <AppSkeleton:CChart.Chart>
-                    <AppSkeleton:CLineChart Smooth="True" Values="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}"/>
+                    <AppSkeleton:CLineChart Smooth="True" Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}"/>
                 </AppSkeleton:CChart.Chart>
             </AppSkeleton:CChart>
         </Grid>

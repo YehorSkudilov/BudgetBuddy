@@ -1,3 +1,4 @@
+using AppSkeleton;
 using System.Collections.ObjectModel;
 
 namespace BudgetBuddy;
@@ -5,26 +6,30 @@ namespace BudgetBuddy;
 public partial class BudgetPage : ContentView
 {
     public static readonly BindableProperty ValuesProperty =
-          BindableProperty.Create(
-              nameof(Values),
-              typeof(ObservableCollection<float>),
-              typeof(HomePage),
-              new ObservableCollection<float>());
+        BindableProperty.Create(
+            nameof(Values),
+            typeof(ObservableCollection<CChartEntry>),
+            typeof(HomePage),
+            new ObservableCollection<CChartEntry>());
 
-    public ObservableCollection<float> Values
+    public ObservableCollection<CChartEntry> Values
     {
-        get => (ObservableCollection<float>)GetValue(ValuesProperty);
+        get => (ObservableCollection<CChartEntry>)GetValue(ValuesProperty);
         set => SetValue(ValuesProperty, value);
     }
+
 
     public BudgetPage()
     {
         InitializeComponent();
 
-        Values = new ObservableCollection<float>
+        Values = new ObservableCollection<CChartEntry>
         {
-            10, 30, 20, 50, 40, 80, 60
+            new CChartEntry { Label = "Food", Value = 500, Color = Colors.Red },
+            new CChartEntry { Label = "Rent", Value = 1200, Color = Colors.Green },
+            new CChartEntry { Label = "Save", Value = 700, Color = Colors.DodgerBlue }
         };
+
 
         MainGrid.BindingContext = this;
     }

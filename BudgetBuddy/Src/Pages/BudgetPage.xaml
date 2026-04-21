@@ -3,20 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
              x:Class="BudgetBuddy.BudgetPage">
-    <Grid x:Name="MainGrid" RowDefinitions=".4*, *">
-        <Border Stroke="#40ffffff" StrokeThickness="1" Background="#20ffffff">
+    <Grid x:Name="MainGrid" RowDefinitions="150, *">
+        <Border Padding="10" Stroke="#40ffffff" StrokeThickness="1" Background="#20ffffff">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="30"/>
             </Border.StrokeShape>
-        </Border>
-
-        <Grid Grid.Row="1">
+            
+                    <Grid>
             <AppSkeleton:CChart>
                 <AppSkeleton:CChart.Chart>
-                    <AppSkeleton:CPieChart Values="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}"/>
+                    <AppSkeleton:CPieChart Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}"/>
                 </AppSkeleton:CChart.Chart>
             </AppSkeleton:CChart>
         </Grid>
+        </Border>
+
+
     </Grid>
 
   
