@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
+             x:Class="BudgetBuddy.BudgetListView"
+             BackgroundColor="Transparent">
+
+    <Grid x:Name="MainGrid">
+        <CollectionView ItemsSource="{Binding BudgetItems}">
+
+            <CollectionView.HeaderTemplate>
+                <DataTemplate>
+
+                    <Grid Margin="10,5"/>
+
+                </DataTemplate>
+            </CollectionView.HeaderTemplate>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <!-- GLASS CARD (matches SettingsPage style) -->
+                    <Border Stroke="#40ffffff"
+                            StrokeThickness="1"
+                            Background="#20ffffff"
+                            Margin="10,0,10,10">
+
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="25"/>
+                        </Border.StrokeShape>
+
+                        <VerticalStackLayout Padding="12" Spacing="10">
+
+                            <!-- TOP ROW -->
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="5"
+                                  VerticalOptions="Center">
+
+                                <AppSkeleton:CButton IconPadding="7" Icon="{Binding Icon}"/>
+
+                                <Label Text="{Binding Name}"
+                                       Grid.Column="1"
+                                       TextColor="#ccffffff"
+                                       FontSize="14"
+                                       VerticalOptions="Center"/>
+
+                                <Image Grid.Column="2" VerticalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="RegularIcons" Glyph="delete"/>
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+
+                            <!-- AMOUNT + LIMIT -->
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="10">
+
+                                  <Grid>
+
+                                    <Entry Text="{Binding GoalAmount}"
+                                           Keyboard="Numeric"
+                                           TextColor="White"
+                                           FontSize="14"
+                                           HorizontalTextAlignment="Center"
+                                           Placeholder="Set Goal"
+                                           PlaceholderColor="#88ffffff"/>
+                                </Grid>
+
+                                <Border Grid.Column="1" Stroke="#33ffffff"
+                              Background="#15ffffff">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12"/>
+                                    </Border.StrokeShape>
+
+                                    <Label VerticalOptions="Center" HorizontalOptions="Center" Text="{Binding CurrentAmount}"/>
+                                </Border>
+
+
+                            </Grid>
+
+                            <!-- PROGRESS -->
+                            <ProgressBar Progress="{Binding ProgressValue}"
+                                         ProgressColor="#00A643"/>
+
+
+                        </VerticalStackLayout>
+
+                    </Border>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+
+</ContentView>

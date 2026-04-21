@@ -90,10 +90,13 @@
     <MauiXaml Update="Src\Pages\TransactionsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Src\Views\BudgetListView\BudgetListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Src\Views\RangePickerView\RangePickerView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
-    <MauiXaml Update="Src\Views\TopNav\TopBar.xaml">
+    <MauiXaml Update="Src\Views\TopBar\TopBar.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Src\Views\TransactionListView\TransactionListView.xaml">
