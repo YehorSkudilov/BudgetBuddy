@@ -7,6 +7,10 @@ public partial class CAppShell : ContentPage
 {
     public ObservableCollection<CNavItem> CNavIconItems { get; set; }
 
+    public Action NotificationsAction { get; set; }
+    public Action SettingsAction { get; set; }
+
+
     private string pageName;
 
     public string PageName
@@ -34,6 +38,7 @@ public partial class CAppShell : ContentPage
             new CNavItem { Glyph = "account_balance_wallet", Color = Colors.White, Action = () =>{SetContent(new BudgetPage(), "Budget"); } }
         };
 
+        SettingsAction = () => { SetContent(new SettingsPage(), "Settings"); NavBar.SelectItem(null); };
 
         NavBar.SelectItem(CNavIconItems[2]);
 
@@ -42,6 +47,7 @@ public partial class CAppShell : ContentPage
 
     void SetContent(ContentView content, string name)
     {
+        TopBar.Deselect();
         View.SetContent(content);
         PageName = name;
     }

@@ -1,12 +1,165 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BudgetBuddy.SettingsPage">
-    <Grid RowDefinitions=".4*, *">
-        <Border Stroke="#40ffffff" StrokeThickness="1" Background="#20ffffff">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="30"/>
-            </Border.StrokeShape>
-        </Border>
+             x:Class="BudgetBuddy.SettingsPage"
+             BackgroundColor="Transparent">
+
+    <Grid>
+        <ScrollView>
+
+            <VerticalStackLayout Spacing="15">
+
+                <!-- ACCOUNT -->
+                <Border Stroke="#40ffffff"
+                        StrokeThickness="1"
+                        Background="#20ffffff">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="25"/>
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Padding="15" Spacing="12">
+
+                        <Label Text="Account"
+                               TextColor="White"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+
+                        <Grid ColumnDefinitions="Auto,*"
+                              Padding="5">
+                            <Label Text="Profile"
+                                   TextColor="#ccffffff"/>
+                            <Label Text=">"
+                                   Grid.Column="1"
+                                   HorizontalOptions="End"
+                                   TextColor="#88ffffff"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,*"
+                              Padding="5">
+                            <Label Text="Security"
+                                   TextColor="#ccffffff"/>
+                            <Label Text=">"
+                                   Grid.Column="1"
+                                   HorizontalOptions="End"
+                                   TextColor="#88ffffff"/>
+                        </Grid>
+
+                        <!-- ADDED -->
+                        <Grid ColumnDefinitions="Auto,*"
+                              Padding="5">
+                            <Label Text="Payment Methods"
+                                   TextColor="#ccffffff"/>
+                            <Label Text=">"
+                                   Grid.Column="1"
+                                   HorizontalOptions="End"
+                                   TextColor="#88ffffff"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,*"
+                              Padding="5">
+                            <Label Text="Subscription"
+                                   TextColor="#ccffffff"/>
+                            <Label Text=">"
+                                   Grid.Column="1"
+                                   HorizontalOptions="End"
+                                   TextColor="#88ffffff"/>
+                        </Grid>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- APP SETTINGS -->
+                <Border Stroke="#40ffffff"
+                        StrokeThickness="1"
+                        Background="#20ffffff">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="25"/>
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Padding="15" Spacing="12">
+
+                        <Label Text="App"
+                               TextColor="White"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Label Text="Dark Mode"
+                                   TextColor="#ccffffff"/>
+                            <Switch Grid.Column="1"
+                                     HorizontalOptions="End"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Label Text="Notifications"
+                                   TextColor="#ccffffff"/>
+                            <Switch Grid.Column="1"
+                                     HorizontalOptions="End"/>
+                        </Grid>
+
+                        <!-- ADDED -->
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Label Text="Haptic Feedback"
+                                   TextColor="#ccffffff"/>
+                            <Switch Grid.Column="1"
+                                     HorizontalOptions="End"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Label Text="Auto Sync"
+                                   TextColor="#ccffffff"/>
+                            <Switch Grid.Column="1"
+                                     HorizontalOptions="End"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Label Text="Show Animations"
+                                   TextColor="#ccffffff"/>
+                            <Switch Grid.Column="1"
+                                     HorizontalOptions="End"/>
+                        </Grid>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ABOUT -->
+                <Border Stroke="#40ffffff"
+                        Margin="0,0,0,15"
+                        StrokeThickness="1"
+                        Background="#20ffffff">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="25"/>
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Padding="15" Spacing="8">
+
+                        <Label Text="About"
+                               TextColor="White"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+
+                        <Label Text="BudgetBuddy v1.0"
+                               TextColor="#ccffffff"/>
+
+                        <Label Text="Built with .NET MAUI"
+                               TextColor="#88ffffff"
+                               FontSize="12"/>
+
+                        <!-- ADDED -->
+                        <Label Text="Privacy Policy"
+                               TextColor="#88ffffff"
+                               FontSize="12"/>
+
+                        <Label Text="Terms of Service"
+                               TextColor="#88ffffff"
+                               FontSize="12"/>
+
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
     </Grid>
 </ContentView>

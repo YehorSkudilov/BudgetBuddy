@@ -93,7 +93,7 @@
     <MauiXaml Update="Src\Views\RangePickerView\RangePickerView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
-    <MauiXaml Update="Src\Views\TopBar.xaml">
+    <MauiXaml Update="Src\Views\TopNav\TopBar.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Src\Views\TransactionListView\TransactionListView.xaml">
