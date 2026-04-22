@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
+             x:Class="BudgetBuddy.BankListView"
+             BackgroundColor="Transparent">
+
+    <ContentView.Resources>
+        <ResourceDictionary>
+
+            <AppSkeleton:BoolToIconConverter x:Key="ExpandIconConverter"
+                                   FalseIcon="arrow_drop_down"
+                                   TrueIcon="arrow_drop_up"/>
+
+        </ResourceDictionary>
+    </ContentView.Resources>
+
+    <Grid x:Name="MainGrid">
+        <CollectionView ItemsSource="{Binding BankItems}">
+
+            <CollectionView.HeaderTemplate>
+                <DataTemplate>
+
+                    <Grid Margin="10,5"/>
+
+                </DataTemplate>
+            </CollectionView.HeaderTemplate>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <Border Stroke="#40ffffff"
+                    StrokeThickness="1"
+                    Background="#20ffffff"
+                    Margin="0,0,0,10">
+
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="25"/>
+                        </Border.StrokeShape>
+
+                        <VerticalStackLayout Padding="12" Spacing="10">
+
+                            <!-- BANK HEADER (CLICKABLE) -->
+                            <Grid ColumnDefinitions="*,Auto"
+                          ColumnSpacing="10">
+
+                                <HorizontalStackLayout Spacing="10">
+                                    <Label Text="{Binding BankName}"
+                               TextColor="White"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"/>
+
+                                    <BoxView Background="#40ffffff" WidthRequest="1" HeightRequest="20"/>
+
+                                    <Label
+                            Text="{Binding TotalBalance}"
+                            TextColor="#ccffffff"
+                            FontSize="14"
+                            VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+
+                                <HorizontalStackLayout Spacing="10" Grid.Column="1">
+            
+
+                                    <AppSkeleton:CButton CButtonBackgroundColor="Transparent" CButtonStroke="Transparent" IconFontFamily="OutlinedIcons" Icon="delete"/>
+
+                                    <AppSkeleton:CButton InputTransparent="True" CButtonBackgroundColor="Transparent" CButtonStroke="Transparent" IconFontFamily="OutlinedIcons" Icon="{Binding IsExpanded, Converter={StaticResource ExpandIconConverter}}" />
+
+                                </HorizontalStackLayout>
+                              
+
+                                <!-- TAP TO EXPAND -->
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnBankTapped"/>
+                                </Grid.GestureRecognizers>
+                            </Grid>
+
+                            <!-- ACCOUNTS LIST (HIDDEN UNTIL EXPANDED) -->
+                            <CollectionView ItemsSource="{Binding Accounts}"
+                                    IsVisible="{Binding IsExpanded}"
+                                    SelectionMode="None">
+
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+
+                                        <Border Stroke="#30ffffff"
+                                        Background="#10ffffff"
+                                        Margin="0,5,0,0">
+
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="15"/>
+                                            </Border.StrokeShape>
+
+                                            <Grid Padding="10"
+                                          ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="10">
+
+                                                <VerticalStackLayout>
+                                                    <Label Text="{Binding Name}"
+                                                   TextColor="White"
+                                                   FontSize="13"/>
+
+                                                    <Label Text="{Binding Type}"
+                                                   TextColor="#88ffffff"
+                                                   FontSize="11"/>
+                                                </VerticalStackLayout>
+
+                                                <Label Grid.Column="1"
+                                               Text="{Binding Balance}"
+                                               TextColor="White"
+                                               VerticalOptions="Center"/>
+                                            </Grid>
+
+                                        </Border>
+
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+
+                            </CollectionView>
+
+                        </VerticalStackLayout>
+
+                    </Border>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </Grid>
+
+</ContentView>

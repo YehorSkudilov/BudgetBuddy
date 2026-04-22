@@ -90,7 +90,13 @@
     <MauiXaml Update="Src\Pages\TransactionsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Src\Views\BankListView\BankListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Src\Views\BudgetListView\BudgetListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Src\Views\PaymentAlertsView\PaymentAlertsView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Src\Views\RangePickerView\RangePickerView.xaml">
@@ -106,6 +112,12 @@
   <ItemGroup>
     <Compile Update="Src\Pages\TransactionsPage.xaml.cs">
       <DependentUpon>TransactionsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Src\Views\BankListView\BankListView.xaml.cs">
+      <DependentUpon>BankListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Src\Views\PaymentAlertsView\PaymentAlertsView.xaml.cs">
+      <DependentUpon>PaymentAlertsView.xaml</DependentUpon>
     </Compile>
     <Compile Update="Src\Views\RangePickerView\RangePickerView.xaml.cs">
       <DependentUpon>RangePickerView.xaml</DependentUpon>

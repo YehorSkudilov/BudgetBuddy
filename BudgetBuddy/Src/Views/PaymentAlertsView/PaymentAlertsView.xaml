@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BudgetBuddy.PaymentAlertsView">
+
+    <Grid>
+
+        <CollectionView ItemsSource="{Binding Alerts}"
+                        SelectionMode="None">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <!-- SAME STYLE AS ACCOUNT ROW (NO BACKGROUND CARD) -->
+                    <Grid Padding="10"
+                          ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="10"
+                          Margin="10,5">
+
+                        <!-- ICON -->
+                        <Label Text="{Binding Icon}"
+                               FontSize="16"
+                               VerticalOptions="Center"
+                               TextColor="White"/>
+
+                        <!-- MAIN TEXT -->
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="{Binding Title}"
+                                   TextColor="White"
+                                   FontSize="14"
+                                   FontAttributes="Bold"/>
+
+                            <Label Text="{Binding Description}"
+                                   TextColor="#88ffffff"
+                                   FontSize="12"/>
+                        </VerticalStackLayout>
+
+                        <!-- AMOUNT / STATUS -->
+                        <Label Grid.Column="2"
+                               Text="{Binding Amount}"
+                               TextColor="White"
+                               FontSize="13"
+                               VerticalOptions="Center"/>
+
+                    </Grid>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </Grid>
+
+</ContentView>
