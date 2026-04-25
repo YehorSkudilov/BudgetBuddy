@@ -40,7 +40,6 @@ public partial class CAppShell : ContentPage
 
         SettingsAction = () => { SetContent(new SettingsPage(), "Settings"); NavBar.SelectItem(null); };
 
-        NavBar.SelectItem(CNavIconItems[2]);
 
         MainGrid.BindingContext = this;
     }
@@ -52,5 +51,9 @@ public partial class CAppShell : ContentPage
         PageName = name;
     }
 
+    private void ContentPage_Loaded(object sender, EventArgs e)
+    {
+        NavBar.SelectItem(CNavIconItems[2]);
+    }
 }
 

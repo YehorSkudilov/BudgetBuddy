@@ -5,32 +5,30 @@
              xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
              x:Class="BudgetBuddy.HomePage">
     <Grid x:Name="MainGrid" RowDefinitions="150, *">
-        <Grid RowDefinitions="200, 25, 25, *">
-            <Grid Padding="10" Margin="0,0,0,10">
-                <acrylic:AcrylicView
-                EffectStyle="Custom"    
-                TintColor="#20ffffff"
-            BorderColor="#40ffffff"
-                TintOpacity=".5"  
-                CornerRadius="25"/>
+        <Grid>
 
 
-                <Grid>
-                    <AppSkeleton:CChart>
-                        <AppSkeleton:CChart.Chart>
-                            <AppSkeleton:CBarChart IsHorizontal="False" Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.MoneyValues}"/>
-                        </AppSkeleton:CChart.Chart>
-                    </AppSkeleton:CChart>
-                </Grid>
-            </Grid>
-
-            <Grid Grid.Row="1">
+            <Grid>
                 <AppSkeleton:CChart>
                     <AppSkeleton:CChart.Chart>
-                        <AppSkeleton:CLineChart Smooth="True" Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}"/>
+                        <AppSkeleton:CBarChart IsHorizontal="False" Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.MoneyValues}"/>
                     </AppSkeleton:CChart.Chart>
                 </AppSkeleton:CChart>
             </Grid>
+
+            <acrylic:AcrylicView
+        InputTransparent="True"
+        TintColor="#20ffffff"
+        TintOpacity=".5"
+        CornerRadius="30"/>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <AppSkeleton:CChart>
+                <AppSkeleton:CChart.Chart>
+                    <AppSkeleton:CLineChart Smooth="True" Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}"/>
+                </AppSkeleton:CChart.Chart>
+            </AppSkeleton:CChart>
         </Grid>
     </Grid>
 </ContentView>

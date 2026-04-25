@@ -11,7 +11,6 @@
             <VerticalStackLayout Spacing="15">
 
                 <Grid>
-                    <!-- ACCOUNT -->
                     <acrylic:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
@@ -48,7 +47,6 @@
                                    TextColor="#88ffffff"/>
                         </Grid>
 
-                        <!-- ADDED -->
                         <Grid ColumnDefinitions="Auto,*"
                               Padding="5">
                             <Label Text="Payment Methods"
@@ -73,7 +71,6 @@
                 </Grid>
 
                 <Grid Margin="0,0,0,10">
-                    <!-- APP SETTINGS -->
                     <acrylic:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
@@ -104,7 +101,6 @@
                                      HorizontalOptions="End"/>
                         </Grid>
 
-                        <!-- ADDED -->
                         <Grid ColumnDefinitions="Auto,*">
                             <Label Text="Haptic Feedback"
                                    TextColor="#ccffffff"/>
@@ -130,7 +126,7 @@
                 </Grid>
 
                 <Grid>
-                    <!-- ABOUT -->
+                      
                     <acrylic:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
@@ -154,7 +150,6 @@
                                TextColor="#88ffffff"
                                FontSize="12"/>
 
-                        <!-- ADDED -->
                         <Label Text="Privacy Policy"
                                TextColor="#88ffffff"
                                FontSize="12"/>
