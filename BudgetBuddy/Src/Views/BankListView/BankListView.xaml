@@ -37,14 +37,14 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-
-                    <acrylic:AcrylicView
+                    <Grid>
+                        <acrylic:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"
                         Margin="0,0,0,10"
                 TintOpacity=".5"  
-                CornerRadius="25">
+                CornerRadius="25"/>
 
 
                         <VerticalStackLayout Padding="12" Spacing="10">
@@ -130,8 +130,8 @@
 
                         </VerticalStackLayout>
 
-                    </acrylic:AcrylicView>
 
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
 
