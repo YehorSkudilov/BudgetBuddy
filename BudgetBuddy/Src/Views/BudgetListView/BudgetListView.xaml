@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
              x:Class="BudgetBuddy.BudgetListView"
-xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
+
              BackgroundColor="Transparent">
 
     <Grid x:Name="MainGrid">
@@ -28,7 +28,7 @@ xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid  Margin="0,0,0,10">
-                        <acrylic:AcrylicView
+                        <AppSkeleton:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"

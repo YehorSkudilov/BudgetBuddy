@@ -2,7 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="BudgetBuddy.SettingsPage"
-             xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
+             xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
              BackgroundColor="Transparent">
 
     <Grid>
@@ -11,7 +11,7 @@
             <VerticalStackLayout Spacing="15">
 
                 <Grid>
-                    <acrylic:AcrylicView
+                    <AppSkeleton:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"
@@ -71,7 +71,7 @@
                 </Grid>
 
                 <Grid Margin="0,0,0,10">
-                    <acrylic:AcrylicView
+                    <AppSkeleton:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"
@@ -127,7 +127,7 @@
 
                 <Grid>
                       
-                    <acrylic:AcrylicView
+                    <AppSkeleton:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"

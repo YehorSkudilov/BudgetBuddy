@@ -3,9 +3,9 @@
              xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
              x:Class="BudgetBuddy.TopBar">
     <Grid x:Name="MainGrid" Margin="5,0" ColumnDefinitions="auto, *, auto">
-        <AppSkeleton:CButton x:Name="NotificationsButton" IsSelectable="False" ClickedAction="{Binding NotificationsAction}" IconFontFamily="OutlinedIcons" SelectedIconFontFamily="RegularIcons" IconHeightRequest="30" IconWidthRequest="30" IconPadding="8" Icon="notifications"/>
+        <AppSkeleton:CButton x:Name="NotificationsButton" IsSelectable="False" ClickedAction="{Binding NotificationsAction}" IconFontFamily="OutlinedIcons" SelectedIconFontFamily="RegularIcons" HeightRequest="30" WidthRequest="30" IconPadding="8" Icon="notifications"/>
         <Label HorizontalOptions="Center" VerticalOptions="Center" FontSize="30" Grid.Column="1" Text="{Binding PageName}"/>
-        <AppSkeleton:CButton x:Name="SettingsButton" ClickedAction="{Binding SettingsAction}" IconFontFamily="OutlinedIcons" SelectedIconFontFamily="RegularIcons" Grid.Column="2" IconHeightRequest="30" IconWidthRequest="30" IconPadding="8" Icon="settings"/>
+        <AppSkeleton:CButton x:Name="SettingsButton" ClickedAction="{Binding SettingsAction}" IconFontFamily="OutlinedIcons" SelectedIconFontFamily="RegularIcons" Grid.Column="2" HeightRequest="30" WidthRequest="30" IconPadding="8" Icon="settings"/>
 
     </Grid>
 </ContentView>
