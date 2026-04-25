@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
              x:Class="BudgetBuddy.BankListView"
+             xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
              BackgroundColor="Transparent">
 
     <ContentView.Resources>
@@ -21,22 +22,30 @@
             <CollectionView.HeaderTemplate>
                 <DataTemplate>
 
-                    <Grid Margin="10,5"/>
+                    <Grid Margin="0,35,0,0"/>
 
                 </DataTemplate>
             </CollectionView.HeaderTemplate>
 
+            <CollectionView.FooterTemplate>
+                <DataTemplate>
+
+                    <Grid Margin="0,25,0,0"/>
+
+                </DataTemplate>
+            </CollectionView.FooterTemplate>
+
             <CollectionView.ItemTemplate>
                 <DataTemplate>
 
-                    <Border Stroke="#40ffffff"
-                    StrokeThickness="1"
-                    Background="#20ffffff"
-                    Margin="0,0,0,10">
+                    <acrylic:AcrylicView
+                EffectStyle="Custom"    
+                TintColor="#20ffffff"
+            BorderColor="#40ffffff"
+                        Margin="0,0,0,10"
+                TintOpacity=".5"  
+                CornerRadius="25">
 
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="25"/>
-                        </Border.StrokeShape>
 
                         <VerticalStackLayout Padding="12" Spacing="10">
 
@@ -61,14 +70,14 @@
                                 </HorizontalStackLayout>
 
                                 <HorizontalStackLayout Spacing="10" Grid.Column="1">
-            
+
 
                                     <AppSkeleton:CButton CButtonBackgroundColor="Transparent" CButtonStroke="Transparent" IconFontFamily="OutlinedIcons" Icon="delete"/>
 
                                     <AppSkeleton:CButton InputTransparent="True" CButtonBackgroundColor="Transparent" CButtonStroke="Transparent" IconFontFamily="OutlinedIcons" Icon="{Binding IsExpanded, Converter={StaticResource ExpandIconConverter}}" />
 
                                 </HorizontalStackLayout>
-                              
+
 
                                 <!-- TAP TO EXPAND -->
                                 <Grid.GestureRecognizers>
@@ -121,7 +130,7 @@
 
                         </VerticalStackLayout>
 
-                    </Border>
+                    </acrylic:AcrylicView>
 
                 </DataTemplate>
             </CollectionView.ItemTemplate>

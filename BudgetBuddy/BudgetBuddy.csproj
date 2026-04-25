@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Splash Screen -->
-    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.png" Color="#1f1f1f" BaseSize="128,128" />
+    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.png" Color="#004D3A" BaseSize="128,128" />
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
     <!-- Custom Fonts -->
@@ -122,9 +122,6 @@
     <Compile Update="Src\Views\RangePickerView\RangePickerView.xaml.cs">
       <DependentUpon>RangePickerView.xaml</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\Images\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AppSkeleton\AppSkeleton\AppSkeleton.csproj" />

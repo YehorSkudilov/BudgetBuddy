@@ -12,10 +12,18 @@ xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
             <CollectionView.HeaderTemplate>
                 <DataTemplate>
 
-                    <Grid Margin="10,5"/>
+                    <Grid Margin="10,35,10,0"/>
 
                 </DataTemplate>
             </CollectionView.HeaderTemplate>
+
+            <CollectionView.FooterTemplate>
+                <DataTemplate>
+
+                    <Grid Margin="0,25,0,0"/>
+
+                </DataTemplate>
+            </CollectionView.FooterTemplate>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -26,7 +34,7 @@ xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"
                         Margin="0,0,0,10"
-                TintOpacity=".15 "  
+                TintOpacity=".5"  
                 CornerRadius="25">
 
         
