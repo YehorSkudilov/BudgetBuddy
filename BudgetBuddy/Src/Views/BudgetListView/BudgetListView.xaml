@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
              x:Class="BudgetBuddy.BudgetListView"
+xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
              BackgroundColor="Transparent">
 
     <Grid x:Name="MainGrid">
@@ -20,16 +21,18 @@
                 <DataTemplate>
 
                     <!-- GLASS CARD (matches SettingsPage style) -->
-                    <Border Stroke="#40ffffff"
-                            StrokeThickness="1"
-                            Background="#20ffffff"
-                            Margin="0,0,0,10">
+                    <acrylic:AcrylicView
+                EffectStyle="Custom"    
+                TintColor="#20ffffff"
+            BorderColor="#40ffffff"
+                        Margin="0,0,0,10"
+                TintOpacity=".15 "  
+                CornerRadius="25">
 
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="25"/>
-                        </Border.StrokeShape>
+        
 
-                        <VerticalStackLayout Padding="12" Spacing="10">
+
+                            <VerticalStackLayout Padding="12" Spacing="10">
 
                             <!-- TOP ROW -->
                             <Grid ColumnDefinitions="Auto,*,Auto"
@@ -51,7 +54,7 @@
                             <Grid ColumnDefinitions="*,*"
                                   ColumnSpacing="10">
 
-                                  <Grid>
+                                <Grid>
 
                                     <Entry Text="{Binding GoalAmount}"
                                            Keyboard="Numeric"
@@ -81,7 +84,7 @@
 
                         </VerticalStackLayout>
 
-                    </Border>
+                    </acrylic:AcrylicView>
 
                 </DataTemplate>
             </CollectionView.ItemTemplate>

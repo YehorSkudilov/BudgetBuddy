@@ -17,8 +17,8 @@
             </Grid>
         </Border>
 
-        <AppSkeleton:CButton IconPadding="8" IconHeightRequest="30" IconFontFamily="OutlinedIcons" Icon="add" Grid.Row="1"/>
+        <AppSkeleton:CButton Margin="5,0"  IconPadding="8" IconHeightRequest="30" IconFontFamily="OutlinedIcons" Icon="add" Grid.Row="1"/>
 
-        <local:BankListView Grid.Row="2"/>
+        <local:BankListView Margin="5,0" Grid.Row="2"/>
     </Grid>
 </ContentView>
