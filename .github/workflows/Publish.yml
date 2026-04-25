@@ -34,7 +34,7 @@ jobs:
       bumped: ${{ steps.bump.outputs.bumped }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Bump MAUI version
         id: bump
@@ -92,7 +92,7 @@ jobs:
           path: BudgetBuddy
 
       - name: Checkout AppSkeleton
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: YehorSkudilov/AppSkeleton
           token: ${{ secrets.REPO_TOKEN }}
