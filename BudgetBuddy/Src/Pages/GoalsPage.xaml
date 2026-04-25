@@ -6,24 +6,26 @@
              xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
              x:Class="BudgetBuddy.GoalsPage">
     <Grid x:Name="MainGrid" RowDefinitions="90, *">
-        <acrylic:AcrylicView
-            Padding="10"
+        <Grid RowDefinitions="200, 25, 25, *">
+            <Grid Padding="10" Margin="0,0,0,10">
+                <acrylic:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"
-                        Margin="0,0,0,10"
                 TintOpacity=".5"  
-                CornerRadius="25">
+                CornerRadius="25"/>
 
 
-            <Grid Grid.Row="1">
-                <AppSkeleton:CChart>
-                    <AppSkeleton:CChart.Chart>
-                        <AppSkeleton:CSegmentedBarChart CornerRadius="16" Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}"/>
-                    </AppSkeleton:CChart.Chart>
-                </AppSkeleton:CChart>
+
+                <Grid Grid.Row="1">
+                    <AppSkeleton:CChart>
+                        <AppSkeleton:CChart.Chart>
+                            <AppSkeleton:CSegmentedBarChart CornerRadius="16" Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}"/>
+                        </AppSkeleton:CChart.Chart>
+                    </AppSkeleton:CChart>
+                </Grid>
             </Grid>
-        </acrylic:AcrylicView>
+        </Grid>
 
     </Grid>
 </ContentView>

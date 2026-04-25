@@ -10,14 +10,15 @@
 
             <VerticalStackLayout Spacing="15">
 
-                <!-- ACCOUNT -->
-                <acrylic:AcrylicView
+                <Grid>
+                    <!-- ACCOUNT -->
+                    <acrylic:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"
                         Margin="0,0,0,10"
                 TintOpacity=".5"  
-                CornerRadius="25">
+                CornerRadius="25"/>
 
 
                     <VerticalStackLayout Padding="15" Spacing="12">
@@ -69,16 +70,17 @@
                         </Grid>
 
                     </VerticalStackLayout>
-                </acrylic:AcrylicView>
+                </Grid>
 
-                <!-- APP SETTINGS -->
-                <acrylic:AcrylicView
+                <Grid Margin="0,0,0,10">
+                    <!-- APP SETTINGS -->
+                    <acrylic:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"
-                        Margin="0,0,0,10"
+
                 TintOpacity=".5"  
-                CornerRadius="25">
+                CornerRadius="25"/>
 
 
                     <VerticalStackLayout Padding="15" Spacing="12">
@@ -125,15 +127,17 @@
                         </Grid>
 
                     </VerticalStackLayout>
-                </acrylic:AcrylicView>
-                <!-- ABOUT -->
-                <acrylic:AcrylicView
+                </Grid>
+
+                <Grid>
+                    <!-- ABOUT -->
+                    <acrylic:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"
                         Margin="0,0,0,50"
                 TintOpacity=".5"  
-                CornerRadius="25">
+                CornerRadius="25"/>
 
 
                     <VerticalStackLayout Padding="15" Spacing="8">
@@ -160,8 +164,8 @@
                                FontSize="12"/>
 
                     </VerticalStackLayout>
-                </acrylic:AcrylicView>
 
+                </Grid>
             </VerticalStackLayout>
 
         </ScrollView>
