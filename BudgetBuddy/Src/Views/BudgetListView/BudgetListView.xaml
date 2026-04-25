@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
-             x:Class="BudgetBuddy.BudgetListView"
-
-             BackgroundColor="Transparent">
+<ContentView
+    x:Class="BudgetBuddy.BudgetListView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
+    BackgroundColor="Transparent">
 
     <Grid x:Name="MainGrid">
         <CollectionView ItemsSource="{Binding BudgetItems}">
@@ -12,7 +12,7 @@
             <CollectionView.HeaderTemplate>
                 <DataTemplate>
 
-                    <Grid Margin="10,35,10,0"/>
+                    <Grid Margin="10,35,10,0" />
 
                 </DataTemplate>
             </CollectionView.HeaderTemplate>
@@ -20,79 +20,88 @@
             <CollectionView.FooterTemplate>
                 <DataTemplate>
 
-                    <Grid Margin="0,25,0,0"/>
+                    <Grid Margin="0,25,0,0" />
 
                 </DataTemplate>
             </CollectionView.FooterTemplate>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid  Margin="0,0,0,10">
-                        <AppSkeleton:AcrylicView
-                EffectStyle="Custom"    
-                TintColor="#20ffffff"
-            BorderColor="#40ffffff"
-                       
-                TintOpacity=".5"  
-                CornerRadius="25"/>
+                    <AppSkeleton:AcrylicView
+                        Margin="0,0,0,10"
+                        BorderColor="#40ffffff"
+                        CornerRadius="25"
+                        EffectStyle="Custom"
+                        TintColor="#20ffffff"
+                        TintOpacity=".5">
 
 
 
 
                         <VerticalStackLayout Padding="12" Spacing="10">
 
-                            <!-- TOP ROW -->
-                            <Grid ColumnDefinitions="Auto,*,Auto"
-                                  ColumnSpacing="5"
-                                  VerticalOptions="Center">
+                            <!--  TOP ROW  -->
+                            <Grid
+                                ColumnDefinitions="Auto,*,Auto"
+                                ColumnSpacing="5"
+                                VerticalOptions="Center">
 
-                                <AppSkeleton:CButton IconPadding="7" Icon="{Binding Icon}"/>
+                                <AppSkeleton:CButton Icon="{Binding Icon}" IconPadding="7" />
 
-                                <Label Text="{Binding Name}"
-                                       Grid.Column="1"
-                                       TextColor="#ccffffff"
-                                       FontSize="14"
-                                       VerticalOptions="Center"/>
+                                <Label
+                                    Grid.Column="1"
+                                    FontSize="14"
+                                    Text="{Binding Name}"
+                                    TextColor="#ccffffff"
+                                    VerticalOptions="Center" />
 
-                                <AppSkeleton:CButton Icon="delete" IconFontFamily="OutlinedIcons" CButtonStroke="Transparent" CButtonBackgroundColor="Transparent"  Grid.Column="2"/>
+                                <AppSkeleton:CButton
+                                    Grid.Column="2"
+                                    CButtonBackgroundColor="Transparent"
+                                    CButtonStroke="Transparent"
+                                    Icon="delete"
+                                    IconFontFamily="OutlinedIcons" />
                             </Grid>
 
-                            <!-- AMOUNT + LIMIT -->
-                            <Grid ColumnDefinitions="*,*"
-                                  ColumnSpacing="10">
+                            <!--  AMOUNT + LIMIT  -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
 
                                 <Grid>
 
-                                    <Entry Text="{Binding GoalAmount}"
-                                           Keyboard="Numeric"
-                                           TextColor="White"
-                                           FontSize="14"
-                                           HorizontalTextAlignment="Center"
-                                           Placeholder="Set Goal"
-                                           PlaceholderColor="#88ffffff"/>
+                                    <Entry
+                                        FontSize="14"
+                                        HorizontalTextAlignment="Center"
+                                        Keyboard="Numeric"
+                                        Placeholder="Set Goal"
+                                        PlaceholderColor="#88ffffff"
+                                        Text="{Binding GoalAmount}"
+                                        TextColor="White" />
                                 </Grid>
 
-                                <Border Grid.Column="1" Stroke="#33ffffff"
-                              Background="#15ffffff">
+                                <Border
+                                    Grid.Column="1"
+                                    Background="#15ffffff"
+                                    Stroke="#33ffffff">
                                     <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="12"/>
+                                        <RoundRectangle CornerRadius="12" />
                                     </Border.StrokeShape>
 
-                                    <Label VerticalOptions="Center" HorizontalOptions="Center" Text="{Binding CurrentAmount}"/>
+                                    <Label
+                                        HorizontalOptions="Center"
+                                        Text="{Binding CurrentAmount}"
+                                        VerticalOptions="Center" />
                                 </Border>
 
 
                             </Grid>
 
-                            <!-- PROGRESS -->
-                            <ProgressBar Progress="{Binding ProgressValue}"
-                                         ProgressColor="#00A643"/>
+                            <!--  PROGRESS  -->
+                            <ProgressBar Progress="{Binding ProgressValue}" ProgressColor="#00A643" />
 
 
                         </VerticalStackLayout>
 
-
-                    </Grid>
+                    </AppSkeleton:AcrylicView>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

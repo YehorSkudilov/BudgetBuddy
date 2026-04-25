@@ -1,166 +1,155 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BudgetBuddy.SettingsPage"
-             xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
-             BackgroundColor="Transparent">
+<ContentView
+    x:Class="BudgetBuddy.SettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
+    BackgroundColor="Transparent">
 
     <Grid>
         <ScrollView>
 
             <VerticalStackLayout Spacing="15">
 
-                <Grid>
-                    <AppSkeleton:AcrylicView
-                EffectStyle="Custom"    
-                TintColor="#20ffffff"
-            BorderColor="#40ffffff"
-                        Margin="0,0,0,10"
-                TintOpacity=".5"  
-                CornerRadius="25"/>
+                <AppSkeleton:AcrylicView
+                    Margin="0,0,0,10"
+                    BorderColor="#40ffffff"
+                    CornerRadius="25"
+                    EffectStyle="Custom"
+                    TintColor="#20ffffff"
+                    TintOpacity=".5">
 
 
                     <VerticalStackLayout Padding="15" Spacing="12">
 
-                        <Label Text="Account"
-                               TextColor="White"
-                               FontSize="16"
-                               FontAttributes="Bold"/>
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="Account"
+                            TextColor="White" />
 
-                        <Grid ColumnDefinitions="Auto,*"
-                              Padding="5">
-                            <Label Text="Profile"
-                                   TextColor="#ccffffff"/>
-                            <Label Text=">"
-                                   Grid.Column="1"
-                                   HorizontalOptions="End"
-                                   TextColor="#88ffffff"/>
+                        <Grid Padding="5" ColumnDefinitions="Auto,*">
+                            <Label Text="Profile" TextColor="#ccffffff" />
+                            <Label
+                                Grid.Column="1"
+                                HorizontalOptions="End"
+                                Text="&gt;"
+                                TextColor="#88ffffff" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto,*"
-                              Padding="5">
-                            <Label Text="Security"
-                                   TextColor="#ccffffff"/>
-                            <Label Text=">"
-                                   Grid.Column="1"
-                                   HorizontalOptions="End"
-                                   TextColor="#88ffffff"/>
+                        <Grid Padding="5" ColumnDefinitions="Auto,*">
+                            <Label Text="Security" TextColor="#ccffffff" />
+                            <Label
+                                Grid.Column="1"
+                                HorizontalOptions="End"
+                                Text="&gt;"
+                                TextColor="#88ffffff" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto,*"
-                              Padding="5">
-                            <Label Text="Payment Methods"
-                                   TextColor="#ccffffff"/>
-                            <Label Text=">"
-                                   Grid.Column="1"
-                                   HorizontalOptions="End"
-                                   TextColor="#88ffffff"/>
+                        <Grid Padding="5" ColumnDefinitions="Auto,*">
+                            <Label Text="Payment Methods" TextColor="#ccffffff" />
+                            <Label
+                                Grid.Column="1"
+                                HorizontalOptions="End"
+                                Text="&gt;"
+                                TextColor="#88ffffff" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto,*"
-                              Padding="5">
-                            <Label Text="Subscription"
-                                   TextColor="#ccffffff"/>
-                            <Label Text=">"
-                                   Grid.Column="1"
-                                   HorizontalOptions="End"
-                                   TextColor="#88ffffff"/>
+                        <Grid Padding="5" ColumnDefinitions="Auto,*">
+                            <Label Text="Subscription" TextColor="#ccffffff" />
+                            <Label
+                                Grid.Column="1"
+                                HorizontalOptions="End"
+                                Text="&gt;"
+                                TextColor="#88ffffff" />
                         </Grid>
 
                     </VerticalStackLayout>
-                </Grid>
+                </AppSkeleton:AcrylicView>
 
-                <Grid Margin="0,0,0,10">
-                    <AppSkeleton:AcrylicView
-                EffectStyle="Custom"    
-                TintColor="#20ffffff"
-            BorderColor="#40ffffff"
-
-                TintOpacity=".5"  
-                CornerRadius="25"/>
+                <AppSkeleton:AcrylicView
+                    Margin="0,0,0,10"
+                    BorderColor="#40ffffff"
+                    CornerRadius="25"
+                    EffectStyle="Custom"
+                    TintColor="#20ffffff"
+                    TintOpacity=".5">
 
 
                     <VerticalStackLayout Padding="15" Spacing="12">
 
-                        <Label Text="App"
-                               TextColor="White"
-                               FontSize="16"
-                               FontAttributes="Bold"/>
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="App"
+                            TextColor="White" />
 
                         <Grid ColumnDefinitions="Auto,*">
-                            <Label Text="Dark Mode"
-                                   TextColor="#ccffffff"/>
-                            <Switch Grid.Column="1"
-                                     HorizontalOptions="End"/>
+                            <Label Text="Dark Mode" TextColor="#ccffffff" />
+                            <Switch Grid.Column="1" HorizontalOptions="End" />
                         </Grid>
 
                         <Grid ColumnDefinitions="Auto,*">
-                            <Label Text="Notifications"
-                                   TextColor="#ccffffff"/>
-                            <Switch Grid.Column="1"
-                                     HorizontalOptions="End"/>
+                            <Label Text="Notifications" TextColor="#ccffffff" />
+                            <Switch Grid.Column="1" HorizontalOptions="End" />
                         </Grid>
 
                         <Grid ColumnDefinitions="Auto,*">
-                            <Label Text="Haptic Feedback"
-                                   TextColor="#ccffffff"/>
-                            <Switch Grid.Column="1"
-                                     HorizontalOptions="End"/>
+                            <Label Text="Haptic Feedback" TextColor="#ccffffff" />
+                            <Switch Grid.Column="1" HorizontalOptions="End" />
                         </Grid>
 
                         <Grid ColumnDefinitions="Auto,*">
-                            <Label Text="Auto Sync"
-                                   TextColor="#ccffffff"/>
-                            <Switch Grid.Column="1"
-                                     HorizontalOptions="End"/>
+                            <Label Text="Auto Sync" TextColor="#ccffffff" />
+                            <Switch Grid.Column="1" HorizontalOptions="End" />
                         </Grid>
 
                         <Grid ColumnDefinitions="Auto,*">
-                            <Label Text="Show Animations"
-                                   TextColor="#ccffffff"/>
-                            <Switch Grid.Column="1"
-                                     HorizontalOptions="End"/>
+                            <Label Text="Show Animations" TextColor="#ccffffff" />
+                            <Switch Grid.Column="1" HorizontalOptions="End" />
                         </Grid>
 
                     </VerticalStackLayout>
-                </Grid>
+                </AppSkeleton:AcrylicView>
 
-                <Grid>
-                      
-                    <AppSkeleton:AcrylicView
-                EffectStyle="Custom"    
-                TintColor="#20ffffff"
-            BorderColor="#40ffffff"
-                        Margin="0,0,0,50"
-                TintOpacity=".5"  
-                CornerRadius="25"/>
+
+                <AppSkeleton:AcrylicView
+                    Margin="0,0,0,50"
+                    BorderColor="#40ffffff"
+                    CornerRadius="25"
+                    EffectStyle="Custom"
+                    TintColor="#20ffffff"
+                    TintOpacity=".5">
 
 
                     <VerticalStackLayout Padding="15" Spacing="8">
 
-                        <Label Text="About"
-                               TextColor="White"
-                               FontSize="16"
-                               FontAttributes="Bold"/>
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="About"
+                            TextColor="White" />
 
-                        <Label Text="BudgetBuddy v1.0"
-                               TextColor="#ccffffff"/>
+                        <Label Text="BudgetBuddy v1.0" TextColor="#ccffffff" />
 
-                        <Label Text="Built with .NET MAUI"
-                               TextColor="#88ffffff"
-                               FontSize="12"/>
+                        <Label
+                            FontSize="12"
+                            Text="Built with .NET MAUI"
+                            TextColor="#88ffffff" />
 
-                        <Label Text="Privacy Policy"
-                               TextColor="#88ffffff"
-                               FontSize="12"/>
+                        <Label
+                            FontSize="12"
+                            Text="Privacy Policy"
+                            TextColor="#88ffffff" />
 
-                        <Label Text="Terms of Service"
-                               TextColor="#88ffffff"
-                               FontSize="12"/>
+                        <Label
+                            FontSize="12"
+                            Text="Terms of Service"
+                            TextColor="#88ffffff" />
 
                     </VerticalStackLayout>
 
-                </Grid>
+                </AppSkeleton:AcrylicView>
             </VerticalStackLayout>
 
         </ScrollView>

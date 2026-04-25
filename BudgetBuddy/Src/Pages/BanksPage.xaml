@@ -1,31 +1,39 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
-             xmlns:local="clr-namespace:BudgetBuddy"
-             
-             x:Class="BudgetBuddy.BanksPage">
-    <Grid RowDefinitions="200, 25, 25, *">
-            <AppSkeleton:AcrylicView
-                EffectStyle="Custom"    
-                TintColor="#20ffffff"
+<ContentView
+    x:Class="BudgetBuddy.BanksPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
+    xmlns:local="clr-namespace:BudgetBuddy">
+    <Grid RowDefinitions="200, 20, 20, *">
+        <AppSkeleton:AcrylicView
+            Margin="0,0,0,10"
+            Padding="10"
             BorderColor="#40ffffff"
-                Padding="10" 
-                Margin="0,0,0,10"
-                TintOpacity=".5"  
-                CornerRadius="25">
+            CornerRadius="25"
+            EffectStyle="Custom"
+            TintColor="#20ffffff"
+            TintOpacity=".5">
+            <Grid RowDefinitions="auto,auto,*" RowSpacing="5">
+                <Label HorizontalOptions="Center" Text="Payment Alerts" />
+                <BoxView Grid.Row="1" HeightRequest="1" />
+                <local:PaymentAlertsView Grid.Row="2" />
+            </Grid>
+        </AppSkeleton:AcrylicView>
 
+        <local:BankListView
+            Grid.Row="2"
+            Grid.RowSpan="2"
+            Margin="5,0" />
 
-                <Grid RowSpacing="5" RowDefinitions="auto,auto,*" >
-                    <Label HorizontalOptions="Center" Text="Payment Alerts"/>
-                    <BoxView HeightRequest="1" Grid.Row="1"/>
-                    <local:PaymentAlertsView Grid.Row="2"/>
-                </Grid>
-            </AppSkeleton:AcrylicView>
-
-        <local:BankListView Margin="5,0" Grid.Row="2" Grid.RowSpan="2"/>
-
-        <AppSkeleton:CButton IconPadding="8" Margin="5,0"  HeightRequest="30" IconFontFamily="OutlinedIcons" Icon="add" Grid.Row="1" Grid.RowSpan="2"/>
+        <AppSkeleton:CButton
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Margin="5,0"
+            IconHeightRequest="30"
+            Icon="add"
+            IconFontFamily="OutlinedIcons"
+            IconPadding="8" />
 
     </Grid>
 </ContentView>

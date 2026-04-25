@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
-             x:Class="BudgetBuddy.BankListView"
-             
-             BackgroundColor="Transparent">
+<ContentView
+    x:Class="BudgetBuddy.BankListView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
+    BackgroundColor="Transparent">
 
     <ContentView.Resources>
         <ResourceDictionary>
 
-            <AppSkeleton:BoolToIconConverter x:Key="ExpandIconConverter"
-                                   FalseIcon="arrow_drop_down"
-                                   TrueIcon="arrow_drop_up"/>
+            <AppSkeleton:BoolToIconConverter
+                x:Key="ExpandIconConverter"
+                FalseIcon="arrow_drop_down"
+                TrueIcon="arrow_drop_up" />
 
         </ResourceDictionary>
     </ContentView.Resources>
@@ -22,7 +23,7 @@
             <CollectionView.HeaderTemplate>
                 <DataTemplate>
 
-                    <Grid Margin="0,35,0,0"/>
+                    <Grid Margin="0,30,0,0" />
 
                 </DataTemplate>
             </CollectionView.HeaderTemplate>
@@ -30,7 +31,7 @@
             <CollectionView.FooterTemplate>
                 <DataTemplate>
 
-                    <Grid Margin="0,25,0,0"/>
+                    <Grid Margin="0,25,0,0" />
 
                 </DataTemplate>
             </CollectionView.FooterTemplate>
@@ -39,97 +40,115 @@
                 <DataTemplate>
                     <Grid>
                         <AppSkeleton:AcrylicView
-                EffectStyle="Custom"    
-                TintColor="#20ffffff"
-            BorderColor="#40ffffff"
-                        Margin="0,0,0,10"
-                TintOpacity=".5"  
-                CornerRadius="25"/>
+                            Margin="0,0,0,10"
+                            BorderColor="#40ffffff"
+                            CornerRadius="25"
+                            EffectStyle="Custom"
+                            TintColor="#20ffffff"
+                            TintOpacity=".5">
 
 
-                        <VerticalStackLayout Padding="12" Spacing="10">
+                            <VerticalStackLayout Padding="12" Spacing="10">
 
-                            <!-- BANK HEADER (CLICKABLE) -->
-                            <Grid ColumnDefinitions="*,Auto"
-                          ColumnSpacing="10">
+                                <!--  BANK HEADER (CLICKABLE)  -->
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
 
-                                <HorizontalStackLayout Spacing="10">
-                                    <Label Text="{Binding BankName}"
-                               TextColor="White"
-                               FontSize="16"
-                               FontAttributes="Bold"
-                               VerticalOptions="Center"/>
+                                    <HorizontalStackLayout Spacing="10">
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            Text="{Binding BankName}"
+                                            TextColor="White"
+                                            VerticalOptions="Center" />
 
-                                    <BoxView Background="#40ffffff" WidthRequest="1" HeightRequest="20"/>
+                                        <BoxView
+                                            Background="#40ffffff"
+                                            HeightRequest="20"
+                                            WidthRequest="1" />
 
-                                    <Label
-                            Text="{Binding TotalBalance}"
-                            TextColor="#ccffffff"
-                            FontSize="14"
-                            VerticalOptions="Center"/>
-                                </HorizontalStackLayout>
+                                        <Label
+                                            FontSize="14"
+                                            Text="{Binding TotalBalance}"
+                                            TextColor="#ccffffff"
+                                            VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
 
-                                <HorizontalStackLayout Spacing="10" Grid.Column="1">
-
-
-                                    <AppSkeleton:CButton CButtonBackgroundColor="Transparent" CButtonStroke="Transparent" IconFontFamily="OutlinedIcons" Icon="delete"/>
-
-                                    <AppSkeleton:CButton InputTransparent="True" CButtonBackgroundColor="Transparent" CButtonStroke="Transparent" IconFontFamily="OutlinedIcons" Icon="{Binding IsExpanded, Converter={StaticResource ExpandIconConverter}}" />
-
-                                </HorizontalStackLayout>
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="10">
 
 
-                                <!-- TAP TO EXPAND -->
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnBankTapped"/>
-                                </Grid.GestureRecognizers>
-                            </Grid>
+                                        <AppSkeleton:CButton
+                                            CButtonBackgroundColor="Transparent"
+                                            CButtonStroke="Transparent"
+                                            Icon="delete"
+                                            IconFontFamily="OutlinedIcons" />
 
-                            <!-- ACCOUNTS LIST (HIDDEN UNTIL EXPANDED) -->
-                            <CollectionView ItemsSource="{Binding Accounts}"
+                                        <AppSkeleton:CButton
+                                            CButtonBackgroundColor="Transparent"
+                                            CButtonStroke="Transparent"
+                                            Icon="{Binding IsExpanded, Converter={StaticResource ExpandIconConverter}}"
+                                            IconFontFamily="OutlinedIcons"
+                                            InputTransparent="True" />
+
+                                    </HorizontalStackLayout>
+
+
+                                    <!--  TAP TO EXPAND  -->
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnBankTapped" />
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+
+                                <!--  ACCOUNTS LIST (HIDDEN UNTIL EXPANDED)  -->
+                                <CollectionView
                                     IsVisible="{Binding IsExpanded}"
+                                    ItemsSource="{Binding Accounts}"
                                     SelectionMode="None">
 
-                                <CollectionView.ItemTemplate>
-                                    <DataTemplate>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
 
-                                        <Border Stroke="#30ffffff"
-                                        Background="#10ffffff"
-                                        Margin="0,5,0,0">
+                                            <Border
+                                                Margin="0,5,0,0"
+                                                Background="#10ffffff"
+                                                Stroke="#30ffffff">
 
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="15"/>
-                                            </Border.StrokeShape>
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="15" />
+                                                </Border.StrokeShape>
 
-                                            <Grid Padding="10"
-                                          ColumnDefinitions="*,Auto"
-                                          ColumnSpacing="10">
+                                                <Grid
+                                                    Padding="10"
+                                                    ColumnDefinitions="*,Auto"
+                                                    ColumnSpacing="10">
 
-                                                <VerticalStackLayout>
-                                                    <Label Text="{Binding Name}"
-                                                   TextColor="White"
-                                                   FontSize="13"/>
+                                                    <VerticalStackLayout>
+                                                        <Label
+                                                            FontSize="13"
+                                                            Text="{Binding Name}"
+                                                            TextColor="White" />
 
-                                                    <Label Text="{Binding Type}"
-                                                   TextColor="#88ffffff"
-                                                   FontSize="11"/>
-                                                </VerticalStackLayout>
+                                                        <Label
+                                                            FontSize="11"
+                                                            Text="{Binding Type}"
+                                                            TextColor="#88ffffff" />
+                                                    </VerticalStackLayout>
 
-                                                <Label Grid.Column="1"
-                                               Text="{Binding Balance}"
-                                               TextColor="White"
-                                               VerticalOptions="Center"/>
-                                            </Grid>
+                                                    <Label
+                                                        Grid.Column="1"
+                                                        Text="{Binding Balance}"
+                                                        TextColor="White"
+                                                        VerticalOptions="Center" />
+                                                </Grid>
 
-                                        </Border>
+                                            </Border>
 
-                                    </DataTemplate>
-                                </CollectionView.ItemTemplate>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
 
-                            </CollectionView>
+                                </CollectionView>
 
-                        </VerticalStackLayout>
-
+                            </VerticalStackLayout>
+                        </AppSkeleton:AcrylicView>
 
                     </Grid>
                 </DataTemplate>
