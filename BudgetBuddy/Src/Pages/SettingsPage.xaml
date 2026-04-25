@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="BudgetBuddy.SettingsPage"
+             xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
              BackgroundColor="Transparent">
 
     <Grid>
@@ -10,12 +11,14 @@
             <VerticalStackLayout Spacing="15">
 
                 <!-- ACCOUNT -->
-                <Border Stroke="#40ffffff"
-                        StrokeThickness="1"
-                        Background="#20ffffff">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="25"/>
-                    </Border.StrokeShape>
+                <acrylic:AcrylicView
+                EffectStyle="Custom"    
+                TintColor="#20ffffff"
+            BorderColor="#40ffffff"
+                        Margin="0,0,0,10"
+                TintOpacity=".5"  
+                CornerRadius="25">
+
 
                     <VerticalStackLayout Padding="15" Spacing="12">
 
@@ -66,15 +69,17 @@
                         </Grid>
 
                     </VerticalStackLayout>
-                </Border>
+                </acrylic:AcrylicView>
 
                 <!-- APP SETTINGS -->
-                <Border Stroke="#40ffffff"
-                        StrokeThickness="1"
-                        Background="#20ffffff">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="25"/>
-                    </Border.StrokeShape>
+                <acrylic:AcrylicView
+                EffectStyle="Custom"    
+                TintColor="#20ffffff"
+            BorderColor="#40ffffff"
+                        Margin="0,0,0,10"
+                TintOpacity=".5"  
+                CornerRadius="25">
+
 
                     <VerticalStackLayout Padding="15" Spacing="12">
 
@@ -120,16 +125,16 @@
                         </Grid>
 
                     </VerticalStackLayout>
-                </Border>
-
+                </acrylic:AcrylicView>
                 <!-- ABOUT -->
-                <Border Stroke="#40ffffff"
-                        Margin="0,0,0,15"
-                        StrokeThickness="1"
-                        Background="#20ffffff">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="25"/>
-                    </Border.StrokeShape>
+                <acrylic:AcrylicView
+                EffectStyle="Custom"    
+                TintColor="#20ffffff"
+            BorderColor="#40ffffff"
+                        Margin="0,0,0,50"
+                TintOpacity=".5"  
+                CornerRadius="25">
+
 
                     <VerticalStackLayout Padding="15" Spacing="8">
 
@@ -155,7 +160,7 @@
                                FontSize="12"/>
 
                     </VerticalStackLayout>
-                </Border>
+                </acrylic:AcrylicView>
 
             </VerticalStackLayout>
 

@@ -7,6 +7,7 @@
              x:Class="BudgetBuddy.BanksPage">
     <Grid RowDefinitions="200, 25, 25, *">
         <acrylic:AcrylicView
+            Padding="10"
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"

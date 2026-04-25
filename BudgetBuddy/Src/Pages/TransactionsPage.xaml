@@ -3,12 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:BudgetBuddy"
              xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
+             xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
              x:Class="BudgetBuddy.TransactionsPage">
     <Grid x:Name="MainGrid" RowDefinitions="150, auto, *">
-        <Border Padding="10" Stroke="#40ffffff" StrokeThickness="1" Background="#20ffffff">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="30"/>
-            </Border.StrokeShape>
+        <acrylic:AcrylicView
+            Padding="10"
+                EffectStyle="Custom"    
+                TintColor="#20ffffff"
+            BorderColor="#40ffffff"
+                        Margin="0,0,0,10"
+                TintOpacity=".5"  
+                CornerRadius="25">
+
 
             <Grid>
                 <AppSkeleton:CChart>
@@ -17,7 +23,7 @@
                     </AppSkeleton:CChart.Chart>
                 </AppSkeleton:CChart>
             </Grid>
-        </Border>
+        </acrylic:AcrylicView>
 
         <Grid Margin="0,10,5,0" ColumnDefinitions="*, auto" ColumnSpacing="10" Grid.Row="1">
             <Grid IsClippedToBounds="True">
