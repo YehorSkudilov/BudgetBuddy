@@ -27,20 +27,19 @@ xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-
-                    <!-- GLASS CARD (matches SettingsPage style) -->
-                    <acrylic:AcrylicView
+                    <Grid  Margin="0,0,0,10">
+                        <acrylic:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"
-                        Margin="0,0,0,10"
+                       
                 TintOpacity=".5"  
-                CornerRadius="25">
-
-        
+                CornerRadius="25"/>
 
 
-                            <VerticalStackLayout Padding="12" Spacing="10">
+
+
+                        <VerticalStackLayout Padding="12" Spacing="10">
 
                             <!-- TOP ROW -->
                             <Grid ColumnDefinitions="Auto,*,Auto"
@@ -92,8 +91,8 @@ xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
 
                         </VerticalStackLayout>
 
-                    </acrylic:AcrylicView>
 
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

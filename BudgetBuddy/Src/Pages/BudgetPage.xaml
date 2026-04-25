@@ -7,24 +7,22 @@
 
              x:Class="BudgetBuddy.BudgetPage">
     <Grid x:Name="MainGrid" RowDefinitions="200, 25, 25, *">
-        <acrylic:AcrylicView
-            Padding="10"
+        <Grid Margin="0,0,0,10" Padding="10">
+            <acrylic:AcrylicView
                 EffectStyle="Custom"    
                 TintColor="#20ffffff"
             BorderColor="#40ffffff"
-                        Margin="0,0,0,10"
                 TintOpacity=".5"  
-                CornerRadius="30">
+                CornerRadius="30"/>
 
             <Grid>
-                <AppSkeleton:CChart>
-                    <AppSkeleton:CChart.Chart>
-                        <AppSkeleton:CPieChart Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}"/>
-                    </AppSkeleton:CChart.Chart>
-                </AppSkeleton:CChart>
-            </Grid>
-        </acrylic:AcrylicView>
-
+                    <AppSkeleton:CChart>
+                        <AppSkeleton:CChart.Chart>
+                            <AppSkeleton:CPieChart Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}"/>
+                        </AppSkeleton:CChart.Chart>
+                    </AppSkeleton:CChart>
+                </Grid>
+        </Grid>
 
 
         <local:BudgetListView Margin="5,0"  Grid.Row="2"  Grid.RowSpan="2"/>
