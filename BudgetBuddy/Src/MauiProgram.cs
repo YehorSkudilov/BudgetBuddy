@@ -1,5 +1,7 @@
 ﻿using AppSkeleton;
 using Microsoft.Extensions.Logging;
+using Xe.AcrylicView;
+
 namespace BudgetBuddy
 {
     public static class MauiProgram
@@ -10,6 +12,7 @@ namespace BudgetBuddy
 
             builder
                 .UseMauiApp<App>()
+                .UseAcrylicView()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -18,7 +21,7 @@ namespace BudgetBuddy
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
