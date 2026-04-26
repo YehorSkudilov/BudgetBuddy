@@ -32,12 +32,6 @@ namespace BudgetBuddy
                 System.Diagnostics.Debug.WriteLine($"[CRASH] Stack: {ex?.StackTrace}");
             };
 
-            AndroidEnvironment.UnhandledExceptionRaiser += (sender, args) =>
-            {
-                System.Diagnostics.Debug.WriteLine($"[UNHANDLED ANDROID] {args.Exception}");
-                args.Handled = true; // prevent crash so you can read the log
-            };
-
             Android.Runtime.AndroidEnvironment.UnhandledExceptionRaiser += (sender, args) =>
             {
                 System.Diagnostics.Debug.WriteLine($"[ANDROID CRASH] {args.Exception?.GetType().FullName}");

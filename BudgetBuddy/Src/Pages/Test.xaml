@@ -3,12 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
              x:Class="BudgetBuddy.Test">
-    <VerticalStackLayout>
+    <Grid>
 
         <AppSkeleton:AcrylicView BorderColor="AliceBlue"  TintOpacity=".1" VerticalOptions="Center" HorizontalOptions="Center" TintColor="Red">
             <Label Text="hellllo"/>
         </AppSkeleton:AcrylicView>
 
 
-    </VerticalStackLayout>
+    </Grid>
 </ContentView>
