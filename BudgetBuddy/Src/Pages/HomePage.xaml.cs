@@ -5,6 +5,8 @@ namespace BudgetBuddy;
 
 public partial class HomePage : ContentView
 {
+    public ObservableCollection<TransactionGroup> RecentTransactions { get; set; }
+
     public static readonly BindableProperty ValuesProperty =
         BindableProperty.Create(
             nameof(Values),
@@ -31,10 +33,45 @@ public partial class HomePage : ContentView
         set => SetValue(MoneyValuesProperty, value);
     }
 
+    public static readonly BindableProperty StatsProperty =
+        BindableProperty.Create(
+            nameof(Stats),
+            typeof(ObservableCollection<StatItem>),
+            typeof(HomePage),
+            new ObservableCollection<StatItem>());
+
+    public ObservableCollection<StatItem> Stats
+    {
+        get => (ObservableCollection<StatItem>)GetValue(StatsProperty);
+        set => SetValue(StatsProperty, value);
+    }
     public HomePage()
     {
         InitializeComponent();
 
+        var sampleTransactions = new List<TransactionItem>
+        {
+            new TransactionItem { Title = "Netflix", Subtitle = "Subscription", Amount = -16.99m, IsIncome = false, DateTime = DateTime.Now },
+            new TransactionItem { Title = "Side Job", Subtitle = "Design Work", Amount = 150.00m, IsIncome = true, DateTime = DateTime.Now },
+            new TransactionItem { Title = "Starbucks", Subtitle = "Coffee", Amount = -5.75m, IsIncome = false, DateTime = DateTime.Now.AddDays(-1) },
+                        new TransactionItem { Title = "Starbucks", Subtitle = "Coffee", Amount = -5.75m, IsIncome = false, DateTime = DateTime.Now.AddDays(-1) },
+                                    new TransactionItem { Title = "Starbucks", Subtitle = "Coffee", Amount = -5.75m, IsIncome = false, DateTime = DateTime.Now.AddDays(-1) }
+
+        };
+
+        RecentTransactions = new ObservableCollection<TransactionGroup>(
+    sampleTransactions
+        .OrderByDescending(t => t.DateTime)
+        .GroupBy(t => t.DateTime.Date)
+        .Select(g => new TransactionGroup(g.Key, g))
+);
+
+        Stats = new ObservableCollection<StatItem>
+        {
+            new StatItem { Title = "Balance", Value = "$4,250", ValueColor = Colors.White },
+            new StatItem { Title = "Monthly", Value = "-$1,120", ValueColor = Color.FromArgb("#FF6B6B") },
+            new StatItem { Title = "Savings", Value = "28%", ValueColor = Color.FromArgb("#4CD964") }
+        };
         Values = new ObservableCollection<CChartEntry>
         {
             new CChartEntry { Label = "2024", Value = 500, Color = Colors.Red },

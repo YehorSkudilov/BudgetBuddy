@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="BudgetBuddy.StatsView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton">
+
+    <Grid x:Name="MainGrid"
+          HorizontalOptions="Center">
+
+        <!-- Acrylic container like navbar -->
+
+
+            <FlexLayout
+                x:Name="StatsFlexLayout"
+                BindableLayout.ItemsSource="{Binding Stats}"
+                Direction="Row"
+                JustifyContent="SpaceAround"
+                AlignItems="Center"
+                Wrap="NoWrap"
+                HorizontalOptions="Center">
+
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <AppSkeleton:AcrylicView
+            EffectStyle="Custom"
+            TintColor="#20ffffff"
+            TintOpacity=".5"
+
+                            MaximumWidthRequest="100"
+            BorderColor="#40ffffff"
+            CornerRadius="20"
+            Padding="10">
+
+
+                            <VerticalStackLayout HorizontalOptions="Center">
+
+                                <Label
+                                    Text="{Binding Title}"
+                                    FontSize="12"
+                                    TextColor="#ccffffff"
+                                    HorizontalOptions="Center"/>
+
+                                <Label
+                                    Text="{Binding Value}"
+                                    FontAttributes="Bold"
+                                    TextColor="{Binding ValueColor}"
+                                    HorizontalOptions="Center"/>
+
+                            </VerticalStackLayout>
+
+                        </AppSkeleton:AcrylicView>
+                </DataTemplate>
+                </BindableLayout.ItemTemplate>
+
+            </FlexLayout>
+
+
+    </Grid>
+</ContentView>
