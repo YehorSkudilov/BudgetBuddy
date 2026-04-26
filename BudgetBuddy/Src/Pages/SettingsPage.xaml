@@ -9,10 +9,9 @@
     <Grid>
         <ScrollView>
 
-            <VerticalStackLayout Spacing="15">
+            <VerticalStackLayout Spacing="10">
 
                 <AppSkeleton:AcrylicView
-                    Margin="0,0,0,10"
                     BorderColor="#40ffffff"
                     CornerRadius="25"
                     EffectStyle="Custom"
@@ -20,7 +19,7 @@
                     TintOpacity=".5">
 
 
-                    <VerticalStackLayout Padding="15" Spacing="12">
+                    <VerticalStackLayout Padding="15" Spacing="5">
 
                         <Label
                             FontAttributes="Bold"
@@ -68,7 +67,6 @@
                 </AppSkeleton:AcrylicView>
 
                 <AppSkeleton:AcrylicView
-                    Margin="0,0,0,10"
                     BorderColor="#40ffffff"
                     CornerRadius="25"
                     EffectStyle="Custom"
@@ -114,7 +112,6 @@
 
 
                 <AppSkeleton:AcrylicView
-                    Margin="0,0,0,50"
                     BorderColor="#40ffffff"
                     CornerRadius="25"
                     EffectStyle="Custom"

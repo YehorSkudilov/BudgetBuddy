@@ -41,8 +41,12 @@
 
         <AppSkeleton:AcrylicView Grid.Row="2" CornerRadius="25" Padding="15" EffectStyle="Custom" TintColor="#20ffffff" TintOpacity=".5" BorderColor="#40ffffff">
             <VerticalStackLayout Spacing="10">
-                <Label Text="Budget Progress" FontAttributes="Bold" TextColor="White"/>
+                <Grid>
+                <Label Text="Budget Progress" VerticalOptions="Center" FontAttributes="Bold" TextColor="White"/>
 
+                    <Button VerticalOptions="Center" Grid.Column="1" Text="See All" HorizontalOptions="End" Padding="1" MinimumHeightRequest="0" MinimumWidthRequest="0" FontSize="12" BackgroundColor="Transparent" TextColor="#88ffffff"/>
+
+                </Grid>
                 <VerticalStackLayout Spacing="2">
                     <Grid ColumnDefinitions="*, Auto">
                         <Label Text="Food &amp; Dining" FontSize="12" TextColor="#ccffffff"/>
