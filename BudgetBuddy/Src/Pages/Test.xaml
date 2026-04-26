@@ -5,7 +5,7 @@
              x:Class="BudgetBuddy.Test">
     <Grid>
 
-        <AppSkeleton:AcrylicView BorderColor="AliceBlue"  TintOpacity=".1" VerticalOptions="Center" HorizontalOptions="Center" TintColor="Red">
+        <AppSkeleton:AcrylicView Background="red" HorizontalOptions="Center" BorderColor="AliceBlue" TintOpacity=".1" TintColor="Red">
             <Label Text="hellllo"/>
         </AppSkeleton:AcrylicView>
 

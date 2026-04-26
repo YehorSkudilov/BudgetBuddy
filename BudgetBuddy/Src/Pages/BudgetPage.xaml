@@ -15,11 +15,20 @@
             TintColor="#20ffffff"
             TintOpacity=".5">
 
-            <AppSkeleton:CChart>
-                <AppSkeleton:CChart.Chart>
-                    <AppSkeleton:CPieChart Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}" />
-                </AppSkeleton:CChart.Chart>
-            </AppSkeleton:CChart>
+            <Grid RowDefinitions="auto,auto,*" RowSpacing="5">
+                <Label
+        HorizontalOptions="Center"
+        Text="Money Flow by Categories" />
+                <Grid ColumnDefinitions="auto" Margin="5,0" HorizontalOptions="End">
+                    <AppSkeleton:CButton IconFontFamily="RegularIcons" Icon="filter_list" HeightRequest="10"/>
+                </Grid>
+                <BoxView Grid.Row="1" HeightRequest="1" />
+                <AppSkeleton:CChart Grid.Row="2">
+                    <AppSkeleton:CChart.Chart>
+                        <AppSkeleton:CPieChart Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}" />
+                    </AppSkeleton:CChart.Chart>
+                </AppSkeleton:CChart>
+            </Grid>
         </AppSkeleton:AcrylicView>
 
 

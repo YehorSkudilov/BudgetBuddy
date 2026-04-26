@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
     xmlns:local="clr-namespace:BudgetBuddy">
-    <Grid x:Name="MainGrid" RowDefinitions="150, auto, *">
+    <Grid x:Name="MainGrid" RowDefinitions="180, auto, *">
         <Grid>
             <AppSkeleton:AcrylicView
                 Padding="10"
@@ -15,18 +15,26 @@
                 TintColor="#20ffffff"
                 TintOpacity=".5">
 
-                <AppSkeleton:CChart>
-                    <AppSkeleton:CChart.Chart>
-                        <AppSkeleton:CBarChart Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}" IsHorizontal="False" />
-                    </AppSkeleton:CChart.Chart>
-                </AppSkeleton:CChart>
+                <Grid RowDefinitions="auto,auto,*" RowSpacing="5">
+                    <Label
+               HorizontalOptions="Center"
+               Text="Money Flow" />
+                    <Grid ColumnDefinitions="auto" Margin="5,0" HorizontalOptions="End">
+                        <AppSkeleton:CButton IconFontFamily="RegularIcons" Icon="filter_list" HeightRequest="10"/>
+                    </Grid>
+                    <BoxView Grid.Row="1" HeightRequest="1" />
+                    <AppSkeleton:CChart Grid.Row="2">
+                        <AppSkeleton:CChart.Chart>
+                            <AppSkeleton:CBarChart Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}" IsHorizontal="False" />
+                        </AppSkeleton:CChart.Chart>
+                    </AppSkeleton:CChart>
+                </Grid>
             </AppSkeleton:AcrylicView>
         </Grid>
 
         <Grid
             Grid.Row="1"
-            Margin="0,10,5,0"
-            ColumnDefinitions="*, auto"
+            Margin="0,10,0,0"
             ColumnSpacing="10">
             <Grid IsClippedToBounds="True">
                 <SearchBar Margin="{OnPlatform Android='-10,0,0,0', Default='10,0,0,0'}" Placeholder="Search transactions..." />
@@ -37,13 +45,6 @@
                     VerticalOptions="End" />
 
             </Grid>
-
-            <AppSkeleton:CButton
-                Grid.Column="1"
-                        Icon="filter_list"
-                        IconFontFamily="RegularIcons"
-                        IconHeightRequest="25"
-                        IconWidthRequest="25"/>
 
 
 

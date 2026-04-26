@@ -85,6 +85,7 @@
                                         <AppSkeleton:CButton
                                             CButtonBackgroundColor="Transparent"
                                             CButtonStroke="Transparent"
+                                            IsBackgroundVisible="False"
                                             Icon="{Binding IsExpanded, Converter={StaticResource ExpandIconConverter}}"
                                             IconFontFamily="OutlinedIcons"
                                             InputTransparent="True" />

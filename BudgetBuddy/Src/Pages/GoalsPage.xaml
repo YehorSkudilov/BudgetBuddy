@@ -20,7 +20,9 @@
                     <Label
                         HorizontalOptions="Center"
                         Text="Saved Over Time" />
-                <AppSkeleton:CButton IconFontFamily="RegularIcons" Icon="filter_list" HeightRequest="10" HorizontalOptions="End"/>
+                <Grid ColumnDefinitions="auto" Margin="5,0" HorizontalOptions="End">
+                    <AppSkeleton:CButton IconFontFamily="RegularIcons" Icon="filter_list" HeightRequest="10"/>
+                </Grid>
                 <BoxView Grid.Row="1" HeightRequest="1" />
                 <AppSkeleton:CChart Grid.Row="2">
                     <AppSkeleton:CChart.Chart>

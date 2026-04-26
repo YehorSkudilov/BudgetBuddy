@@ -5,7 +5,7 @@
              xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
              
              x:Class="BudgetBuddy.HomePage">
-    <Grid x:Name="MainGrid" RowDefinitions="150, *">
+    <Grid x:Name="MainGrid" RowDefinitions="180, *">
 
         <Grid Grid.Row="1">
             <AppSkeleton:CChart>
@@ -24,14 +24,19 @@
                 TintOpacity=".5"  
                 CornerRadius="25">
 
-
-                    <AppSkeleton:CChart>
-                        <AppSkeleton:CChart.Chart>
-                            <AppSkeleton:CBarChart IsHorizontal="False" Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.MoneyValues}"/>
-                        </AppSkeleton:CChart.Chart>
-                    </AppSkeleton:CChart>
-
-            </AppSkeleton:AcrylicView>
+            <Grid RowDefinitions="auto,auto,*" RowSpacing="5">
+                <Label
+        HorizontalOptions="Center"
+        Text="Net Worth" />
+   
+                <BoxView Grid.Row="1" HeightRequest="1" />
+                <AppSkeleton:CChart Grid.Row="2">
+                    <AppSkeleton:CChart.Chart>
+                        <AppSkeleton:CBarChart IsHorizontal="False" Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.MoneyValues}"/>
+                    </AppSkeleton:CChart.Chart>
+                </AppSkeleton:CChart>
+            </Grid>
+        </AppSkeleton:AcrylicView>
 
 
     </Grid>

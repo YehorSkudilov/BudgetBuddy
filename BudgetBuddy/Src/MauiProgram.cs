@@ -17,7 +17,6 @@ namespace BudgetBuddy
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     fonts.AddCIcons();
                 });
-
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
