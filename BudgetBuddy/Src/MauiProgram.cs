@@ -1,5 +1,4 @@
-﻿using Android.Runtime;
-using AppSkeleton;
+﻿using AppSkeleton;
 using Microsoft.Extensions.Logging;
 namespace BudgetBuddy
 {

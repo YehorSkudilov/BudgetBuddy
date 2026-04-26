@@ -38,7 +38,7 @@ public partial class CAppShell : ContentPage
             new CNavItem { Glyph = "account_balance_wallet", Color = Colors.White, Action = () =>{SetContent(new BudgetPage(), "Budget"); } }
         };
 
-        SettingsAction = () => { SetContent(new SettingsPage(), "Settings"); NavBar.SelectItem(null); };
+        SettingsAction = () => { SetContent(new Test(), "Settings"); NavBar.SelectItem(null); };
 
 
         MainGrid.BindingContext = this;
