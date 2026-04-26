@@ -1,5 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Android.Runtime;
 using AppSkeleton;
+using Microsoft.Extensions.Logging;
 namespace BudgetBuddy
 {
     public static class MauiProgram
@@ -30,6 +31,12 @@ namespace BudgetBuddy
                 System.Diagnostics.Debug.WriteLine($"[CRASH] Message: {ex?.Message}");
                 System.Diagnostics.Debug.WriteLine($"[CRASH] Inner: {ex?.InnerException?.Message}");
                 System.Diagnostics.Debug.WriteLine($"[CRASH] Stack: {ex?.StackTrace}");
+            };
+
+            AndroidEnvironment.UnhandledExceptionRaiser += (sender, args) =>
+            {
+                System.Diagnostics.Debug.WriteLine($"[UNHANDLED ANDROID] {args.Exception}");
+                args.Handled = true; // prevent crash so you can read the log
             };
 
             Android.Runtime.AndroidEnvironment.UnhandledExceptionRaiser += (sender, args) =>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="BudgetBuddy.GoalListView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
+    BackgroundColor="Transparent">
+
+    <Grid x:Name="MainGrid">
+
+        <CollectionView ItemsSource="{Binding Goals}">
+
+            <!--  TOP SPACING  -->
+            <CollectionView.HeaderTemplate>
+                <DataTemplate>
+                    <Grid Margin="10,35,10,0" />
+                </DataTemplate>
+            </CollectionView.HeaderTemplate>
+
+            <!--  BOTTOM SPACING  -->
+            <CollectionView.FooterTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,25,0,0" />
+                </DataTemplate>
+            </CollectionView.FooterTemplate>
+
+            <!--  ITEM TEMPLATE  -->
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <AppSkeleton:AcrylicView
+                        Margin="0,0,0,10"
+                        BorderColor="#40ffffff"
+                        CornerRadius="25"
+                        EffectStyle="Custom"
+                        TintColor="#20ffffff"
+                        TintOpacity=".5">
+
+                        <VerticalStackLayout Padding="12" Spacing="10">
+
+                            <!--  TOP ROW  -->
+                            <Grid
+                                ColumnDefinitions="Auto,*,Auto"
+                                ColumnSpacing="5"
+                                VerticalOptions="Center">
+
+                                <!--  ICON  -->
+                                <AppSkeleton:CButton Icon="{Binding Icon}" IconPadding="7" />
+
+                                <!--  NAME  -->
+                                <Label
+                                    Grid.Column="1"
+                                    FontSize="14"
+                                    Text="{Binding Name}"
+                                    TextColor="#ccffffff"
+                                    VerticalOptions="Center" />
+
+                                <HorizontalStackLayout Grid.Column="2">
+                                    <AppSkeleton:CButton Icon="delete" IconFontFamily="OutlinedIcons" />
+
+                                </HorizontalStackLayout>
+                            </Grid>
+
+                            <!--  TARGET + SAVED  -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+
+                                <!--  TARGET  -->
+                                <Border
+                                    Grid.Column="1"
+                                    Background="#15ffffff"
+                                    Stroke="#33ffffff">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+
+                                    <VerticalStackLayout Padding="6" Spacing="2">
+                                        <Label
+                                            FontSize="10"
+                                            HorizontalOptions="Center"
+                                            Text="Target"
+                                            TextColor="#88ffffff" />
+
+                                        <Label
+                                            FontSize="14"
+                                            HorizontalOptions="Center"
+                                            Text="{Binding TargetAmount}"
+                                            TextColor="White" />
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <!--  SAVED  -->
+                                <Border
+                                    Grid.Column="0"
+                                    Background="#15ffffff"
+                                    Stroke="#33ffffff">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+
+                                    <VerticalStackLayout Padding="6" Spacing="2">
+                                        <Label
+                                            FontSize="10"
+                                            HorizontalOptions="Center"
+                                            Text="Saved"
+                                            TextColor="#88ffffff" />
+
+                                        <Label
+                                            FontSize="14"
+                                            HorizontalOptions="Center"
+                                            Text="{Binding SavedAmount}"
+                                            TextColor="White" />
+                                    </VerticalStackLayout>
+                                </Border>
+
+                            </Grid>
+
+                            <!--  PROGRESS BAR  -->
+                            <Grid Margin="5,0" ColumnDefinitions="auto,*,auto" ColumnSpacing="15">
+                                <AppSkeleton:CButton Icon="remove" IconFontFamily="OutlinedIcons" />
+                                <ProgressBar
+                                    Grid.Column="1"
+                                    HeightRequest="6"
+                                    Progress="{Binding ProgressValue}"
+                                    ProgressColor="#00A643" />
+                                <AppSkeleton:CButton
+                                    Grid.Column="2"
+                                    Icon="add"
+                                    IconFontFamily="OutlinedIcons" />
+
+                            </Grid>
+
+                        </VerticalStackLayout>
+
+                    </AppSkeleton:AcrylicView>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </Grid>
+
+</ContentView>

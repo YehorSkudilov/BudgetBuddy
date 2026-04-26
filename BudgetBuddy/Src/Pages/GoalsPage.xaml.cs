@@ -23,8 +23,9 @@ public partial class GoalsPage : ContentView
 
         Values = new ObservableCollection<CChartEntry>
         {
-            new CChartEntry { Label = "Saved", Value = 500, Color = Colors.Red },
-            new CChartEntry { Label = "Left", Value = 1200, Color = Colors.Green },
+            new CChartEntry { Label = "2024", Value = 500, Color = Colors.Red },
+            new CChartEntry { Label = "2025", Value = 1200, Color = Colors.Green },
+            new CChartEntry { Label = "2026", Value = 700, Color = Colors.DodgerBlue }
         };
 
         MainGrid.BindingContext = this;

@@ -5,8 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
     xmlns:local="clr-namespace:BudgetBuddy">
-    <Grid x:Name="MainGrid" RowDefinitions="90, *">
+    <Grid x:Name="MainGrid" RowDefinitions="200, 25,25, *">
         <AppSkeleton:AcrylicView
+            Margin="0,0,0,10"
             Padding="10"
             BorderColor="#40ffffff"
             CornerRadius="25"
@@ -15,15 +16,35 @@
             TintOpacity=".5">
 
 
-
-            <Grid Grid.Row="1">
-                <AppSkeleton:CChart>
+            <Grid RowDefinitions="auto,auto,*" RowSpacing="5">
+                    <Label
+                        HorizontalOptions="Center"
+                        Text="Saved Over Time" />
+                <AppSkeleton:CButton IconFontFamily="RegularIcons" Icon="filter_list" HeightRequest="10" HorizontalOptions="End"/>
+                <BoxView Grid.Row="1" HeightRequest="1" />
+                <AppSkeleton:CChart Grid.Row="2">
                     <AppSkeleton:CChart.Chart>
-                        <AppSkeleton:CSegmentedBarChart CornerRadius="16" Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}" />
+                        <AppSkeleton:CLineChart Entries="{Binding Source={x:Reference MainGrid}, Path=BindingContext.Values}" Smooth="True" />
                     </AppSkeleton:CChart.Chart>
                 </AppSkeleton:CChart>
             </Grid>
+
+
         </AppSkeleton:AcrylicView>
+
+        <local:GoalListView
+            Grid.Row="2"
+            Grid.RowSpan="2"
+            Margin="5,0" />
+
+        <AppSkeleton:CButton
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Margin="5,0"
+            Icon="add"
+            IconFontFamily="OutlinedIcons"
+            IconHeightRequest="30"
+            IconPadding="8" />
 
     </Grid>
 </ContentView>

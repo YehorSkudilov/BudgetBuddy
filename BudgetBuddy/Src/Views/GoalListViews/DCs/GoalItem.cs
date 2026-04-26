@@ -3,23 +3,23 @@ using System.Runtime.CompilerServices;
 
 namespace BudgetBuddy;
 
-public class BudgetItem : INotifyPropertyChanged
+public class GoalItem : INotifyPropertyChanged
 {
-    private double currentAmount;
+    private double savedAmount;
 
     public string Icon { get; set; }
     public string Name { get; set; }
 
-    public double GoalAmount { get; set; }
+    public double TargetAmount { get; set; }
 
-    public double CurrentAmount
+    public double SavedAmount
     {
-        get => currentAmount;
+        get => savedAmount;
         set
         {
-            if (currentAmount != value)
+            if (savedAmount != value)
             {
-                currentAmount = value;
+                savedAmount = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ProgressValue));
             }
@@ -27,10 +27,10 @@ public class BudgetItem : INotifyPropertyChanged
     }
 
     public double ProgressValue =>
-        GoalAmount == 0 ? 0 : CurrentAmount / GoalAmount;
+        TargetAmount == 0 ? 0 : SavedAmount / TargetAmount;
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    protected void OnPropertyChanged([CallerMemberName] string name = null)
+    public void OnPropertyChanged([CallerMemberName] string name = null)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

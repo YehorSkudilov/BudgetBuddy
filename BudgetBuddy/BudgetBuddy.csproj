@@ -96,6 +96,9 @@
     <MauiXaml Update="Src\Views\BudgetListView\BudgetListView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Src\Views\GoalListViews\GoalListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Src\Views\PaymentAlertsView\PaymentAlertsView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
@@ -115,6 +118,9 @@
     </Compile>
     <Compile Update="Src\Views\BankListView\BankListView.xaml.cs">
       <DependentUpon>BankListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Src\Views\GoalListViews\GoalListView.xaml.cs">
+      <DependentUpon>GoalListView.xaml</DependentUpon>
     </Compile>
     <Compile Update="Src\Views\PaymentAlertsView\PaymentAlertsView.xaml.cs">
       <DependentUpon>PaymentAlertsView.xaml</DependentUpon>

@@ -37,14 +37,14 @@
                     VerticalOptions="End" />
 
             </Grid>
-            <Image
+
+            <AppSkeleton:CButton
                 Grid.Column="1"
-                HorizontalOptions="End"
-                VerticalOptions="Center">
-                <Image.Source>
-                    <FontImageSource FontFamily="RegularIcons" Glyph="filter_list" />
-                </Image.Source>
-            </Image>
+                        Icon="filter_list"
+                        IconFontFamily="RegularIcons"
+                        IconHeightRequest="25"
+                        IconWidthRequest="25"/>
+
 
 
         </Grid>
