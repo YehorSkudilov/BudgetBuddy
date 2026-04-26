@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:AppSkeleton="clr-namespace:AppSkeleton;assembly=AppSkeleton"
     xmlns:local="clr-namespace:BudgetBuddy">
-    <Grid RowDefinitions="200, 20, 20, *">
+    <Grid x:Name="MainGrid" RowDefinitions="200, 20, 20, *">
         <AppSkeleton:AcrylicView
             Margin="0,0,0,10"
             Padding="10"
@@ -30,10 +30,20 @@
             Grid.Row="1"
             Grid.RowSpan="2"
             Margin="5,0"
-            IconHeightRequest="30"
+            Clicked="Add_Clicked"
             Icon="add"
             IconFontFamily="OutlinedIcons"
+            IconHeightRequest="30"
             IconPadding="8" />
+
+        <Border IsVisible="{Binding IsWebViewOpen}"  StrokeThickness="0" Margin="0,0,0,40" Grid.RowSpan="4">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20"/>
+            </Border.StrokeShape>
+
+                <WebView x:Name="XWebView"/>
+        </Border>
+
 
     </Grid>
 </ContentView>

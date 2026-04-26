@@ -61,4 +61,9 @@ public partial class TopBar : ContentView
         InitializeComponent();
         MainGrid.BindingContext = this;
     }
+
+    private void SettingsButton_Clicked(object sender, EventArgs e)
+    {
+        SettingsAction.Invoke();
+    }
 }
