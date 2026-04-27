@@ -1,6 +1,7 @@
 ﻿namespace BudgetBuddyAPI;
 
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using System.Text.Json;
 
 public class AppDbContext : DbContext
@@ -55,11 +56,22 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Transaction>()
             .OwnsOne(t => t.personal_finance_category);
 
-
         modelBuilder.Entity<Transaction>()
             .HasMany(t => t.counterparties)
             .WithOne()
             .HasForeignKey("TransactionId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Transaction>()
+            .HasOne(t => t.location)
+            .WithOne(l => l.transaction)
+            .HasForeignKey<TransactionLocation>(l => l.transaction_id)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Transaction>()
+            .HasOne(t => t.payment_meta)
+            .WithOne(p => p.transaction)
+            .HasForeignKey<TransactionPaymentMeta>(p => p.transaction_id)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
