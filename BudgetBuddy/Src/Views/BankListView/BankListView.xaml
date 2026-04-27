@@ -18,140 +18,145 @@
     </ContentView.Resources>
 
     <Grid x:Name="MainGrid">
+
+        <!-- FIX: BankItems is still fine -->
         <CollectionView ItemsSource="{Binding BankItems}">
 
             <CollectionView.HeaderTemplate>
                 <DataTemplate>
-
                     <Grid Margin="0,30,0,0" />
-
                 </DataTemplate>
             </CollectionView.HeaderTemplate>
 
             <CollectionView.FooterTemplate>
                 <DataTemplate>
-
                     <Grid Margin="0,25,0,0" />
-
                 </DataTemplate>
             </CollectionView.FooterTemplate>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
-                        <AppSkeleton:AcrylicView
-                            Margin="0,0,0,10"
-                            BorderColor="#40ffffff"
-                            CornerRadius="25"
-                            EffectStyle="Custom"
-                            TintColor="#20ffffff"
-                            TintOpacity=".5">
 
+                    <AppSkeleton:AcrylicView
+                        Margin="0,0,0,10"
+                        BorderColor="#40ffffff"
+                        CornerRadius="25"
+                        EffectStyle="Custom"
+                        TintColor="#20ffffff"
+                        TintOpacity=".5">
 
-                            <VerticalStackLayout Padding="12" Spacing="10">
+                        <VerticalStackLayout Padding="12" Spacing="10">
 
-                                <!--  BANK HEADER (CLICKABLE)  -->
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <!-- BANK HEADER -->
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
 
-                                    <HorizontalStackLayout Spacing="10">
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="16"
-                                            Text="{Binding BankName}"
-                                            TextColor="White"
-                                            VerticalOptions="Center" />
+                                <HorizontalStackLayout Spacing="10">
 
-                                        <BoxView
-                                            Background="#40ffffff"
-                                            HeightRequest="20"
-                                            WidthRequest="1" />
+                                    <!-- FIX: InstitutionName instead of BankName -->
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="{Binding InstitutionName}"
+                                        TextColor="White"
+                                        VerticalOptions="Center" />
 
-                                        <Label
-                                            FontSize="14"
-                                            Text="{Binding TotalBalance}"
-                                            TextColor="#ccffffff"
-                                            VerticalOptions="Center" />
-                                    </HorizontalStackLayout>
+                                    <BoxView
+                                        Background="#40ffffff"
+                                        HeightRequest="20"
+                                        WidthRequest="1" />
 
-                                    <HorizontalStackLayout Grid.Column="1" Spacing="10">
+                                    <!-- If you don't have TotalBalance in model, remove or keep if computed -->
+                                    <Label
+                                        FontSize="14"
+                                        Text="{Binding TotalBalance}"
+                                        TextColor="#ccffffff"
+                                        VerticalOptions="Center" />
 
+                                </HorizontalStackLayout>
 
-                                        <AppSkeleton:CButton
-                                            CButtonBackgroundColor="Transparent"
-                                            CButtonStroke="Transparent"
-                                            Icon="delete"
-                                            IconFontFamily="OutlinedIcons" />
+                                <HorizontalStackLayout Grid.Column="1" Spacing="10">
 
-                                        <AppSkeleton:CButton
-                                            CButtonBackgroundColor="Transparent"
-                                            CButtonStroke="Transparent"
-                                            IsBackgroundVisible="False"
-                                            Icon="{Binding IsExpanded, Converter={StaticResource ExpandIconConverter}}"
-                                            IconFontFamily="OutlinedIcons"
-                                            InputTransparent="True" />
+                                    <AppSkeleton:CButton
+                                        CButtonBackgroundColor="Transparent"
+                                        CButtonStroke="Transparent"
+                                        Icon="delete"
+                                        IconFontFamily="OutlinedIcons" />
 
-                                    </HorizontalStackLayout>
+                                    <AppSkeleton:CButton
+                                        CButtonBackgroundColor="Transparent"
+                                        CButtonStroke="Transparent"
+                                        IsBackgroundVisible="False"
+                                        Icon="{Binding IsExpanded, Converter={StaticResource ExpandIconConverter}}"
+                                        IconFontFamily="OutlinedIcons"
+                                        InputTransparent="True" />
 
+                                </HorizontalStackLayout>
 
-                                    <!--  TAP TO EXPAND  -->
-                                    <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnBankTapped" />
-                                    </Grid.GestureRecognizers>
-                                </Grid>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnBankTapped" />
+                                </Grid.GestureRecognizers>
 
-                                <!--  ACCOUNTS LIST (HIDDEN UNTIL EXPANDED)  -->
-                                <CollectionView
-                                    IsVisible="{Binding IsExpanded}"
-                                    ItemsSource="{Binding Accounts}"
-                                    SelectionMode="None">
+                            </Grid>
 
-                                    <CollectionView.ItemTemplate>
-                                        <DataTemplate>
+                            <!-- ACCOUNTS -->
+                            <CollectionView
+                                IsVisible="{Binding IsExpanded}"
+                                ItemsSource="{Binding Accounts}"
+                                SelectionMode="None">
 
-                                            <Border
-                                                Margin="0,5,0,0"
-                                                Background="#10ffffff"
-                                                Stroke="#30ffffff">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
 
-                                                <Border.StrokeShape>
-                                                    <RoundRectangle CornerRadius="15" />
-                                                </Border.StrokeShape>
+                                        <Border
+                                            Margin="0,5,0,0"
+                                            Background="#10ffffff"
+                                            Stroke="#30ffffff">
 
-                                                <Grid
-                                                    Padding="10"
-                                                    ColumnDefinitions="*,Auto"
-                                                    ColumnSpacing="10">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="15" />
+                                            </Border.StrokeShape>
 
-                                                    <VerticalStackLayout>
-                                                        <Label
-                                                            FontSize="13"
-                                                            Text="{Binding Name}"
-                                                            TextColor="White" />
+                                            <Grid
+                                                Padding="10"
+                                                ColumnDefinitions="*,Auto"
+                                                ColumnSpacing="10">
 
-                                                        <Label
-                                                            FontSize="11"
-                                                            Text="{Binding Type}"
-                                                            TextColor="#88ffffff" />
-                                                    </VerticalStackLayout>
+                                                <VerticalStackLayout>
 
+                                                    <!-- FIX: Account.Name -->
                                                     <Label
-                                                        Grid.Column="1"
-                                                        Text="{Binding Balance}"
-                                                        TextColor="White"
-                                                        VerticalOptions="Center" />
-                                                </Grid>
+                                                        FontSize="13"
+                                                        Text="{Binding Name}"
+                                                        TextColor="White" />
 
-                                            </Border>
+                                                    <!-- FIX: Account.Type -->
+                                                    <Label
+                                                        FontSize="11"
+                                                        Text="{Binding Type}"
+                                                        TextColor="#88ffffff" />
 
-                                        </DataTemplate>
-                                    </CollectionView.ItemTemplate>
+                                                </VerticalStackLayout>
 
-                                </CollectionView>
+                                                <!-- FIX: Account.Balance -->
+                                                <Label
+                                                    Grid.Column="1"
+                                                    Text="{Binding Balance}"
+                                                    TextColor="White"
+                                                    VerticalOptions="Center" />
 
-                            </VerticalStackLayout>
-                        </AppSkeleton:AcrylicView>
+                                            </Grid>
 
-                    </Grid>
+                                        </Border>
+
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+
+                            </CollectionView>
+
+                        </VerticalStackLayout>
+
+                    </AppSkeleton:AcrylicView>
+
                 </DataTemplate>
             </CollectionView.ItemTemplate>
 

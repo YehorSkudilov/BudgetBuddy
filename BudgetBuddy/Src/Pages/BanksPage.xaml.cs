@@ -1,10 +1,69 @@
+using BudgetBuddy.Services;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace BudgetBuddy;
 
-public partial class BanksPage : ContentView
+public partial class BanksPage : ContentView, INotifyPropertyChanged
 {
+    private readonly Finance _finance;
+
+    public BanksPage()
+    {
+        InitializeComponent();
+
+        _finance = new Finance();
+
+
+        XWebView.Navigating += XWebView_Navigating;
+
+       LoadBanksAsync();
+       MainGrid.BindingContext = this;
+
+    }
+
+    // -----------------------------
+    // REACTIVE BANKS COLLECTION
+    // -----------------------------
+    private ObservableCollection<Bank> _banks = new();
+
+    public ObservableCollection<Bank> Banks
+    {
+        get => _banks;
+        set
+        {
+            if (_banks == value) return;
+            _banks = value;
+            OnPropertyChanged();
+        }
+    }
+
+    // -----------------------------
+    // LOAD BANKS FROM API
+    // -----------------------------
+    private async Task LoadBanksAsync()
+    {
+        try
+        {
+            var result = await _finance.GetAllBanksAsync();
+
+            if (result == null)
+                return;
+
+            Banks = new ObservableCollection<Bank>(result);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("LoadBanks error: " + ex.Message);
+        }
+    }
+
+    // -----------------------------
+    // PLAID STATE
+    // -----------------------------
     private bool isWebViewOpen;
 
     public bool IsWebViewOpen
@@ -15,30 +74,21 @@ public partial class BanksPage : ContentView
             if (isWebViewOpen == value) return;
 
             isWebViewOpen = value;
-            OnPropertyChanged(nameof(IsWebViewOpen));
+            OnPropertyChanged();
             OnIsWebViewOpenChanged(value);
         }
     }
 
-    public BanksPage()
-    {
-        InitializeComponent();
-
-        MainGrid.BindingContext = this;
-
-        XWebView.Navigating += XWebView_Navigating;
-    }
-
     // -----------------------------
-    // START FLOW
+    // START PLAID FLOW
     // -----------------------------
     private async void Add_Clicked(object sender, EventArgs e)
     {
         IsWebViewOpen = true;
 
-        var token = await CreateLinkToken();
+        var token = await ApiCommunicators.Plaid.CreateLinkTokenAsync();
 
-        XWebView.Source = "http://10.100.100.135:5107/plaid.html";
+        XWebView.Source = $"{ApiCommunicators.BaseUrl}/plaid.html";
 
         XWebView.Navigated += async (s, args) =>
         {
@@ -57,25 +107,7 @@ public partial class BanksPage : ContentView
     }
 
     // -----------------------------
-    // CREATE LINK TOKEN
-    // -----------------------------
-    private async Task<string> CreateLinkToken()
-    {
-        using var client = new HttpClient();
-
-        var res = await client.PostAsync(
-            "http://10.100.100.135:5107/api/plaid/CreateLinkToken",
-            null);
-
-        var json = await res.Content.ReadAsStringAsync();
-
-        var doc = JsonDocument.Parse(json);
-
-        return doc.RootElement.GetProperty("link_token").GetString();
-    }
-
-    // -----------------------------
-    // HANDLE WEBVIEW CALLBACKS
+    // HANDLE PLAID CALLBACKS
     // -----------------------------
     private async void XWebView_Navigating(object sender, WebNavigatingEventArgs e)
     {
@@ -104,13 +136,17 @@ public partial class BanksPage : ContentView
                     {
                         using var doc = JsonDocument.Parse(json);
 
-                        if (doc.RootElement.TryGetProperty("public_token", out var token))
+                        if (doc.RootElement.TryGetProperty("public_token", out var tokenElement))
                         {
-                            var publicToken = token.GetString();
+                            var publicToken = tokenElement.GetString();
 
                             Debug.WriteLine("PUBLIC TOKEN: " + publicToken);
 
-                            await ExchangePublicToken(publicToken);
+                            await ApiCommunicators.Plaid
+                                .ExchangePublicTokenAsync(publicToken);
+
+                            // 🔥 refresh banks after linking
+                            await LoadBanksAsync();
                         }
                     }
                 }
@@ -118,7 +154,6 @@ public partial class BanksPage : ContentView
             catch (Exception ex)
             {
                 Debug.WriteLine("Plaid parse error: " + ex.Message);
-
             }
 
             IsWebViewOpen = false;
@@ -126,46 +161,7 @@ public partial class BanksPage : ContentView
     }
 
     // -----------------------------
-    // EXCHANGE PUBLIC TOKEN
-    // -----------------------------
-    private async Task ExchangePublicToken(string publicToken)
-    {
-        try
-        {
-            using var client = new HttpClient();
-
-            var payload = new
-            {
-                public_token = publicToken
-            };
-
-            var jsonContent = new StringContent(
-                JsonSerializer.Serialize(payload),
-                System.Text.Encoding.UTF8,
-                "application/json"
-            );
-
-            var res = await client.PostAsync(
-                "http://10.100.100.135:5107/api/plaid/Exchange",
-                jsonContent
-            );
-
-            var response = await res.Content.ReadAsStringAsync();
-
-            Debug.WriteLine("EXCHANGE RESPONSE: " + response);
-
-          
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine("Exchange error: " + ex.Message);
-
-
-        }
-    }
-
-    // -----------------------------
-    // WEBVIEW STATE CONTROL
+    // WEBVIEW STATE RESET
     // -----------------------------
     private void OnIsWebViewOpenChanged(bool isOpen)
     {
@@ -174,4 +170,12 @@ public partial class BanksPage : ContentView
             XWebView.Source = "about:blank";
         }
     }
+
+    // -----------------------------
+    // PROPERTY CHANGED (UI NOTIFY)
+    // -----------------------------
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    protected void OnPropertyChanged([CallerMemberName] string name = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

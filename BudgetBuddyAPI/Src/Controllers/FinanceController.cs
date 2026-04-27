@@ -125,10 +125,24 @@ public class FinanceController : ControllerBase
     // GET BANKS
     // =========================
     [HttpGet("[action]")]
-    public async Task<IActionResult> GetBanks()
+    public async Task<IActionResult> GetAllBanks()
     {
         var banks = await _db.BankConnections
-            .OrderByDescending(x => x.CreatedAt)
+            .Include(b => b.Accounts)
+            .Select(b => new
+            {
+                b.Id,
+                b.InstitutionName,
+                b.CreatedAt,
+                Accounts = b.Accounts.Select(a => new
+                {
+                    a.Id,
+                    a.Name,
+                    a.Type,
+                    a.Subtype,
+                    a.Balance
+                })
+            })
             .ToListAsync();
 
         return Ok(banks);
