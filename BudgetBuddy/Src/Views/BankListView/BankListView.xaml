@@ -80,6 +80,7 @@
                                         CButtonBackgroundColor="Transparent"
                                         CButtonStroke="Transparent"
                                         Icon="delete"
+                                        Clicked="CButton_Clicked"
                                         IconFontFamily="OutlinedIcons" />
 
                                     <AppSkeleton:CButton

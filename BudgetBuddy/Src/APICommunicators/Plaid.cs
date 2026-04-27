@@ -67,4 +67,18 @@ public class Plaid
 
         return await res.Content.ReadAsStringAsync();
     }
+
+    // -----------------------------
+    // REMOVE BANK
+    // -----------------------------
+    public async Task<string> RemoveBankAsync(int bankId)
+    {
+        var res = await _client.DeleteAsync(
+            Endpoint($"/RemoveBank/{bankId}")
+        );
+
+        res.EnsureSuccessStatusCode();
+
+        return await res.Content.ReadAsStringAsync();
+    }
 }

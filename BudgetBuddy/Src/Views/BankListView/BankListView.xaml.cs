@@ -33,4 +33,20 @@ public partial class BankListView : ContentView
             bank.IsExpanded = !bank.IsExpanded;
         }
     }
+
+    private async void CButton_Clicked(object sender, EventArgs e)
+    {
+        if (sender is AppSkeleton.CButton button &&
+            button.BindingContext is BankConnection bank)
+        {
+            // you now have the bank object for that row
+            var bankId = bank.Id; // or whatever your PK is
+
+            var plaid = new Plaid();
+            await plaid.RemoveBankAsync(bankId);
+
+            // optional: remove from UI immediately
+            BankItems.Remove(bank);
+        }
+    }
 }
