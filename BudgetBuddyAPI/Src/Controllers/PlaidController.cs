@@ -161,7 +161,7 @@ public class PlaidController : ControllerBase
             }
             else
             {
-                acc.id = 0; // let EF assign PK
+                acc.id = 0;
                 acc.bank_connection_id = bank.id;
                 _db.BankAccounts.Add(acc);
             }
@@ -193,11 +193,14 @@ public class PlaidController : ControllerBase
     // TRANSACTION SYNC
     // =========================
     private async Task<(int added, int modified, int removed, string cursor)>
-      SyncTransactionsAsync(BankConnection bank, Dictionary<string, int> accountsMap)
+        SyncTransactionsAsync(BankConnection bank, Dictionary<string, int> accountsMap)
     {
         int added = 0, modified = 0, removed = 0;
 
         var txMap = await _db.Transactions
+            .Include(t => t.counterparties)
+            .Include(t => t.location)
+            .Include(t => t.payment_meta)
             .Where(t => t.bank_account.bank_connection_id == bank.id)
             .ToDictionaryAsync(t => t.transaction_id);
 
@@ -223,21 +226,59 @@ public class PlaidController : ControllerBase
                     amount = (decimal)t.amount,
                     name = t.name,
                     merchant_name = t.merchant_name,
+                    merchant_entity_id = t.merchant_entity_id,
                     iso_currency_code = t.iso_currency_code,
+                    unofficial_currency_code = t.unofficial_currency_code,
                     date = t.date,
                     authorized_date = t.authorized_date,
+                    datetime = t.datetime,
+                    authorized_datetime = t.authorized_datetime,
                     pending = t.pending,
+                    pending_transaction_id = t.pending_transaction_id,
                     payment_channel = t.payment_channel,
                     transaction_type = t.transaction_type,
+                    transaction_code = t.transaction_code,
                     logo_url = t.logo_url,
                     website = t.website,
+                    personal_finance_category_icon_url = t.personal_finance_category_icon_url,
+                    account_owner = t.account_owner,
+                    check_number = t.check_number,
+                    personal_finance_category = t.personal_finance_category,
                     bank_account_id = accountId,
 
                     counterparties = t.counterparties?.Select(c => new TransactionCounterparty
                     {
                         name = c.name,
-                        type = c.type
-                    }).ToList() ?? new()
+                        type = c.type,
+                        logo_url = c.logo_url,
+                        website = c.website,
+                        confidence_level = c.confidence_level,
+                        entity_id = c.entity_id
+                    }).ToList() ?? new(),
+
+                    location = t.location != null ? new TransactionLocation
+                    {
+                        address = t.location.address,
+                        city = t.location.city,
+                        region = t.location.region,
+                        country = t.location.country,
+                        postal_code = t.location.postal_code,
+                        lat = t.location.lat,
+                        lon = t.location.lon,
+                        store_number = t.location.store_number
+                    } : null,
+
+                    payment_meta = t.payment_meta != null ? new TransactionPaymentMeta
+                    {
+                        by_order_of = t.payment_meta.by_order_of,
+                        payee = t.payment_meta.payee,
+                        payer = t.payment_meta.payer,
+                        payment_method = t.payment_meta.payment_method,
+                        payment_processor = t.payment_meta.payment_processor,
+                        ppd_id = t.payment_meta.ppd_id,
+                        reason = t.payment_meta.reason,
+                        reference_number = t.payment_meta.reference_number
+                    } : null
                 };
 
                 toAdd.Add(entity);
@@ -255,21 +296,85 @@ public class PlaidController : ControllerBase
                 existing.amount = (decimal)t.amount;
                 existing.name = t.name;
                 existing.merchant_name = t.merchant_name;
+                existing.merchant_entity_id = t.merchant_entity_id;
+                existing.unofficial_currency_code = t.unofficial_currency_code;
                 existing.date = t.date;
                 existing.authorized_date = t.authorized_date;
+                existing.datetime = t.datetime;
+                existing.authorized_datetime = t.authorized_datetime;
                 existing.pending = t.pending;
+                existing.pending_transaction_id = t.pending_transaction_id;
                 existing.payment_channel = t.payment_channel;
+                existing.transaction_type = t.transaction_type;
+                existing.transaction_code = t.transaction_code;
                 existing.logo_url = t.logo_url;
                 existing.website = t.website;
+                existing.personal_finance_category_icon_url = t.personal_finance_category_icon_url;
+                existing.account_owner = t.account_owner;
+                existing.check_number = t.check_number;
+                existing.personal_finance_category = t.personal_finance_category;
 
-                // IMPORTANT FIX: map properly instead of direct assignment
-                existing.counterparties = t.counterparties?
-                    .Select(c => new TransactionCounterparty
+                existing.counterparties = t.counterparties?.Select(c => new TransactionCounterparty
+                {
+                    name = c.name,
+                    type = c.type,
+                    logo_url = c.logo_url,
+                    website = c.website,
+                    confidence_level = c.confidence_level,
+                    entity_id = c.entity_id
+                }).ToList() ?? new();
+
+                if (existing.location != null && t.location != null)
+                {
+                    existing.location.address = t.location.address;
+                    existing.location.city = t.location.city;
+                    existing.location.region = t.location.region;
+                    existing.location.country = t.location.country;
+                    existing.location.postal_code = t.location.postal_code;
+                    existing.location.lat = t.location.lat;
+                    existing.location.lon = t.location.lon;
+                    existing.location.store_number = t.location.store_number;
+                }
+                else
+                {
+                    existing.location = t.location != null ? new TransactionLocation
                     {
-                        name = c.name,
-                        type = c.type
-                    })
-                    .ToList() ?? new();
+                        address = t.location.address,
+                        city = t.location.city,
+                        region = t.location.region,
+                        country = t.location.country,
+                        postal_code = t.location.postal_code,
+                        lat = t.location.lat,
+                        lon = t.location.lon,
+                        store_number = t.location.store_number
+                    } : null;
+                }
+
+                if (existing.payment_meta != null && t.payment_meta != null)
+                {
+                    existing.payment_meta.by_order_of = t.payment_meta.by_order_of;
+                    existing.payment_meta.payee = t.payment_meta.payee;
+                    existing.payment_meta.payer = t.payment_meta.payer;
+                    existing.payment_meta.payment_method = t.payment_meta.payment_method;
+                    existing.payment_meta.payment_processor = t.payment_meta.payment_processor;
+                    existing.payment_meta.ppd_id = t.payment_meta.ppd_id;
+                    existing.payment_meta.reason = t.payment_meta.reason;
+                    existing.payment_meta.reference_number = t.payment_meta.reference_number;
+                }
+                else
+                {
+                    existing.payment_meta = t.payment_meta != null ? new TransactionPaymentMeta
+                    {
+                        by_order_of = t.payment_meta.by_order_of,
+                        payee = t.payment_meta.payee,
+                        payer = t.payment_meta.payer,
+                        payment_method = t.payment_meta.payment_method,
+                        payment_processor = t.payment_meta.payment_processor,
+                        ppd_id = t.payment_meta.ppd_id,
+                        reason = t.payment_meta.reason,
+                        reference_number = t.payment_meta.reference_number
+                    } : null;
+                }
 
                 modified++;
             }
