@@ -14,7 +14,6 @@ public class BankConnection
     public Institution institution { get; set; } = null!;
 
     public string? transactions_cursor { get; set; }
-    public DateTime created_at { get; set; }
-
+    public DateTime created_at { get; set; } = DateTime.UtcNow;
     public List<BankAccount> accounts { get; set; } = new();
 }

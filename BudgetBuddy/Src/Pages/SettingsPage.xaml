@@ -12,8 +12,14 @@
             <VerticalStackLayout Spacing="10">
 
 
-                    <AppSkeleton:CButton IconFontFamily="OutlinedIcons" Icon="sync" Clicked="CButton_Clicked"/>
-    
+                <AppSkeleton:CButton
+                    Clicked="CButton_Clicked"
+                    HeightRequest="80"
+                    Icon="sync"
+                    IconFontFamily="OutlinedIcons"
+                    IconHeightRequest="30"
+                    IconWidthRequest="30" />
+
 
                 <AppSkeleton:AcrylicView
                     BorderColor="#40ffffff"

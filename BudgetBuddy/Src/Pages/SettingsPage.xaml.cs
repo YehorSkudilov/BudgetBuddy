@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace BudgetBuddy;
 
 public partial class SettingsPage : ContentView
@@ -9,6 +11,8 @@ public partial class SettingsPage : ContentView
 
     private void CButton_Clicked(object sender, EventArgs e)
     {
-		ApiCommunicators.Plaid.SyncAllBanksAsync();
+        Debug.WriteLine("Clicked");
+
+        ApiCommunicators.Plaid.SyncAllBanksAsync();
     }
 }

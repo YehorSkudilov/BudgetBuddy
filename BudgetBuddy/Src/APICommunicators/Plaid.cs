@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 
 namespace BudgetBuddy;
@@ -57,9 +58,9 @@ public class Plaid
 
     public async Task<string?> SyncAllBanksAsync()
     {
-        var res = await _client.PostAsync(
-            Endpoint("/SyncAllBanks"),
-            null
+        Debug.WriteLine("Sync");
+        var res = await _client.GetAsync(
+            Endpoint("/SyncAllBanks")
         );
 
         res.EnsureSuccessStatusCode();
