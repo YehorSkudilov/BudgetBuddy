@@ -54,4 +54,16 @@ public class Plaid
 
         return await res.Content.ReadAsStringAsync();
     }
+
+    public async Task<string?> SyncAllBanksAsync()
+    {
+        var res = await _client.PostAsync(
+            Endpoint("/SyncAllBanks"),
+            null
+        );
+
+        res.EnsureSuccessStatusCode();
+
+        return await res.Content.ReadAsStringAsync();
+    }
 }
