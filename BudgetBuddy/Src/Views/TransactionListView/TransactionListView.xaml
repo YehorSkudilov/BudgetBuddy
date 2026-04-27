@@ -1,57 +1,79 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:BudgetBuddy"
-             x:Class="BudgetBuddy.TransactionListView">
+<ContentView
+    x:Class="BudgetBuddy.TransactionListView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:BudgetBuddy">
 
     <ContentView.Resources>
         <ResourceDictionary>
-            <local:BoolToColorConverter x:Key="BoolToColorConverter"/>
+            <local:BoolToColorConverter x:Key="BoolToColorConverter" />
         </ResourceDictionary>
     </ContentView.Resources>
-    
-    
+
+
     <Grid x:Name="MainGrid">
-        <CollectionView ItemsSource="{Binding Items}" IsGrouped="True">
+        <CollectionView IsGrouped="True" ItemsSource="{Binding Items}">
 
             <CollectionView.GroupHeaderTemplate>
                 <DataTemplate>
                     <Grid Margin="0,20,0,5">
-                        <Label Text="{Binding DateTime, StringFormat='{0:MMM dd yyyy}'}"
-                    FontSize="14"
-                   FontAttributes="Bold"/>
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            Text="{Binding DateTime, StringFormat='{0:MMM dd yyyy}'}" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.GroupHeaderTemplate>
 
+            <CollectionView.FooterTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,0,0,45">
+                       
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.FooterTemplate>
+
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="15,0,0,10" ColumnDefinitions="*,Auto" RowDefinitions="auto,5">
-                        <BoxView Grid.Row="1" VerticalOptions="End" HeightRequest="1" Grid.ColumnSpan="3"/>
+                    <Grid
+                        Padding="15,0,0,10"
+                        RowDefinitions="auto,5">
+                        <BoxView
+                            Grid.Row="1"
+                            Grid.ColumnSpan="3"
+                            HeightRequest="1"
+                            VerticalOptions="End" />
 
-                        <HorizontalStackLayout Spacing="5">
 
                             <VerticalStackLayout>
-                                <Label Grid.Row="1"
-                                   VerticalOptions="Center"
-                               Text="{Binding DateTime, StringFormat='{0:hh:mm tt}'}"
-                               FontSize="11"
-                               Opacity="0.5" />
-                                <Label Text="{Binding Title}"
-                               FontSize="16"
-                               FontAttributes="Bold"/>
+                                <Label
+                                    Grid.Row="1"
+                                    FontSize="11"
+                                    Opacity="0.5"
+                                    Text="{Binding DateTime, StringFormat='{0:hh:mm tt}'}"
+                                    VerticalOptions="Center" />
+                                <Grid ColumnSpacing="10" ColumnDefinitions="*, auto">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="{Binding Name}" />
 
-                            <Label Text="{Binding Subtitle}"
-                               FontSize="12"
-                               Opacity="0.6"/>
+                                    <Label
+                                        Grid.Column="1"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="{Binding Amount, StringFormat='{0:$#,0.00;-$#,0.00;$0.00}'}"
+                                        TextColor="{Binding IsIncome, Converter={StaticResource BoolToColorConverter}}"
+                                        VerticalOptions="Center" />
+                                </Grid>
+
+                                <Label
+                                    FontSize="12"
+                                    Opacity="0.6"
+                                    Text="{Binding Category.Primary}" />
                             </VerticalStackLayout>
-                        </HorizontalStackLayout>
 
-                        <Label VerticalOptions="Center" Grid.Column="1"
-                           Text="{Binding Amount, StringFormat='{0:$#,0.00;-$#,0.00;$0.00}'}"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           TextColor="{Binding IsIncome, Converter={StaticResource BoolToColorConverter}}"/>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

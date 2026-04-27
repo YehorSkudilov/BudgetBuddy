@@ -141,4 +141,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\AppSkeleton\AppSkeleton\AppSkeleton.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <MauiAsset Update="Resources\Raw\plaid.html">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </MauiAsset>
+  </ItemGroup>
 </Project>

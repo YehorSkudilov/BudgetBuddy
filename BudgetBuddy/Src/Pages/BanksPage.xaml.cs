@@ -10,22 +10,44 @@ public partial class BanksPage : ContentView, INotifyPropertyChanged
 {
     private readonly Finance _finance;
 
+    // cache plaid html so we don't reload file every time
+    private string _plaidHtml;
+
+    private string _plaidToken;
+
     public BanksPage()
     {
         InitializeComponent();
 
         _finance = new Finance();
 
+        BindingContext = this;
 
+        // attach ONCE only
         XWebView.Navigating += XWebView_Navigating;
+        XWebView.Navigated += XWebView_Navigated;
 
-       LoadBanksAsync();
-       MainGrid.BindingContext = this;
-
+        _ = InitAsync();
     }
 
     // -----------------------------
-    // REACTIVE BANKS COLLECTION
+    // INIT
+    // -----------------------------
+    private async Task InitAsync()
+    {
+        try
+        {
+            await LoadPlaidHtmlAsync();
+            await LoadBanksAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("Init error: " + ex);
+        }
+    }
+
+    // -----------------------------
+    // BANKS
     // -----------------------------
     private ObservableCollection<BankConnection> _banks = new();
 
@@ -40,138 +62,165 @@ public partial class BanksPage : ContentView, INotifyPropertyChanged
         }
     }
 
-    // -----------------------------
-    // LOAD BANKS FROM API
-    // -----------------------------
     private async Task LoadBanksAsync()
     {
         try
         {
             var result = await _finance.GetAllBanksAsync();
 
-            if (result == null)
-                return;
-
-            Banks = new ObservableCollection<BankConnection>(result);
+            Banks = result != null
+                ? new ObservableCollection<BankConnection>(result)
+                : new ObservableCollection<BankConnection>();
         }
         catch (Exception ex)
         {
-            Debug.WriteLine("LoadBanks error: " + ex.Message);
+            Debug.WriteLine("LoadBanks error: " + ex);
         }
     }
 
     // -----------------------------
-    // PLAID STATE
+    // WEBVIEW STATE
     // -----------------------------
-    private bool isWebViewOpen;
+    private bool _isWebViewOpen;
 
     public bool IsWebViewOpen
     {
-        get => isWebViewOpen;
+        get => _isWebViewOpen;
         set
         {
-            if (isWebViewOpen == value) return;
-
-            isWebViewOpen = value;
+            if (_isWebViewOpen == value) return;
+            _isWebViewOpen = value;
             OnPropertyChanged();
             OnIsWebViewOpenChanged(value);
         }
     }
 
     // -----------------------------
-    // START PLAID FLOW
+    // PLAID START
     // -----------------------------
     private async void Add_Clicked(object sender, EventArgs e)
     {
-        IsWebViewOpen = true;
-
-        var token = await ApiCommunicators.Plaid.CreateLinkTokenAsync();
-
-        XWebView.Source = $"{ApiCommunicators.BaseUrl}/plaid.html";
-
-        XWebView.Navigated += async (s, args) =>
+        try
         {
-            await Task.Delay(800);
+            IsWebViewOpen = true;
 
-            await XWebView.EvaluateJavaScriptAsync($@"
-                (function waitForPlaid() {{
-                    if (typeof startPlaid === 'function') {{
-                        startPlaid('{token}');
-                    }} else {{
-                        setTimeout(waitForPlaid, 100);
-                    }}
-                }})();
-            ");
-        };
+            _plaidToken = await ApiCommunicators.Plaid.CreateLinkTokenAsync();
+
+            // just assign cached HTML (fast)
+            XWebView.Source = new HtmlWebViewSource
+            {
+                Html = _plaidHtml
+            };
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("Add_Clicked error: " + ex);
+            IsWebViewOpen = false;
+        }
     }
 
     // -----------------------------
-    // HANDLE PLAID CALLBACKS
+    // LOAD PLAID HTML ONCE
+    // -----------------------------
+    private async Task LoadPlaidHtmlAsync()
+    {
+        try
+        {
+            using var stream = await FileSystem.OpenAppPackageFileAsync("plaid.html");
+            using var reader = new StreamReader(stream);
+
+            _plaidHtml = await reader.ReadToEndAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("HTML load error: " + ex);
+        }
+    }
+
+    // -----------------------------
+    // WEBVIEW NAVIGATED (inject once)
+    // -----------------------------
+    private async void XWebView_Navigated(object sender, WebNavigatedEventArgs e)
+    {
+        if (string.IsNullOrEmpty(_plaidToken))
+            return;
+
+        try
+        {
+            await Task.Delay(300);
+
+            await XWebView.EvaluateJavaScriptAsync($@"
+                if (window.startPlaid) {{
+                    startPlaid('{_plaidToken}');
+                }}
+            ");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("JS inject error: " + ex);
+        }
+    }
+
+    // -----------------------------
+    // CALLBACK HANDLER
     // -----------------------------
     private async void XWebView_Navigating(object sender, WebNavigatingEventArgs e)
     {
         if (string.IsNullOrEmpty(e.Url))
             return;
 
-        if (e.Url.StartsWith("maui://plaid-success") ||
-            e.Url.StartsWith("maui://plaid-exit"))
+        if (!e.Url.StartsWith("maui://plaid-success") &&
+            !e.Url.StartsWith("maui://plaid-exit"))
+            return;
+
+        e.Cancel = true;
+
+        try
         {
-            e.Cancel = true;
+            var uri = new Uri(e.Url);
 
-            try
+            var data = System.Web.HttpUtility
+                .ParseQueryString(uri.Query)
+                .Get("data");
+
+            if (!string.IsNullOrEmpty(data))
             {
-                var uri = new Uri(e.Url);
+                var json = Uri.UnescapeDataString(data);
 
-                var data = System.Web.HttpUtility
-                    .ParseQueryString(uri.Query)
-                    .Get("data");
-
-                if (!string.IsNullOrEmpty(data))
+                if (e.Url.StartsWith("maui://plaid-success"))
                 {
-                    var json = Uri.UnescapeDataString(data);
-                    Debug.WriteLine("PLAID CALLBACK: " + json);
+                    using var doc = JsonDocument.Parse(json);
 
-                    if (e.Url.StartsWith("maui://plaid-success"))
+                    if (doc.RootElement.TryGetProperty("public_token", out var token))
                     {
-                        using var doc = JsonDocument.Parse(json);
+                        var publicToken = token.GetString();
 
-                        if (doc.RootElement.TryGetProperty("public_token", out var tokenElement))
-                        {
-                            var publicToken = tokenElement.GetString();
+                        await ApiCommunicators.Plaid.ExchangePublicTokenAsync(publicToken);
 
-                            Debug.WriteLine("PUBLIC TOKEN: " + publicToken);
-
-                            await ApiCommunicators.Plaid
-                                .ExchangePublicTokenAsync(publicToken);
-
-                            // 🔥 refresh banks after linking
-                            await LoadBanksAsync();
-                        }
+                        await LoadBanksAsync();
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Plaid parse error: " + ex.Message);
-            }
-
-            IsWebViewOpen = false;
         }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("Plaid callback error: " + ex);
+        }
+
+        IsWebViewOpen = false;
     }
 
     // -----------------------------
-    // WEBVIEW STATE RESET
+    // RESET WEBVIEW
     // -----------------------------
     private void OnIsWebViewOpenChanged(bool isOpen)
     {
         if (!isOpen)
-        {
             XWebView.Source = "about:blank";
-        }
     }
 
     // -----------------------------
-    // PROPERTY CHANGED (UI NOTIFY)
+    // PROPERTY CHANGED
     // -----------------------------
     public event PropertyChangedEventHandler PropertyChanged;
 

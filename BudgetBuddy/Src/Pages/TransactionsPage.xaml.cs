@@ -7,7 +7,18 @@ namespace BudgetBuddy;
 
 public partial class TransactionsPage : ContentView
 {
-    public ObservableCollection<TransactionGroup> TransactionsGroups { get; set; }
+    public static readonly BindableProperty TransactionsGroupsProperty =
+    BindableProperty.Create(
+        nameof(TransactionsGroups),
+        typeof(ObservableCollection<TransactionGroup>),
+        typeof(HomePage),
+        new ObservableCollection<TransactionGroup>());
+
+    public ObservableCollection<TransactionGroup> TransactionsGroups
+    {
+        get => (ObservableCollection<TransactionGroup>)GetValue(TransactionsGroupsProperty);
+        set => SetValue(TransactionsGroupsProperty, value);
+    }
 
     public static readonly BindableProperty ValuesProperty =
     BindableProperty.Create(
@@ -41,8 +52,6 @@ public partial class TransactionsPage : ContentView
     async void LoadTransactions()
     {
         var transactions = await ApiCommunicators.Finance.GetAllTransactionsAsync();
-
-        Debug.WriteLine(JsonSerializer.Serialize(transactions));
 
         TransactionsGroups = new ObservableCollection<TransactionGroup>(
             transactions

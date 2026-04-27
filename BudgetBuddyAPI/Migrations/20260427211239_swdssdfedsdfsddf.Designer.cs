@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BudgetBuddyAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260427203053_swdssdfedsdfsddf")]
+    [Migration("20260427211239_swdssdfedsdfsddf")]
     partial class swdssdfedsdfsddf
     {
         /// <inheritdoc />

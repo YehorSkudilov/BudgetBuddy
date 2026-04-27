@@ -188,34 +188,96 @@ public class FinanceController : ControllerBase
     public async Task<IActionResult> GetAllTransactions()
     {
         var transactions = await _db.Transactions
-            .Include(t => t.bank_account)
-                .ThenInclude(a => a.bank_connection)
-                    .ThenInclude(c => c.institution)
             .OrderByDescending(t => t.date)
             .Select(t => new
             {
                 t.id,
                 t.transaction_id,
+                t.account_id,
+
                 t.name,
                 t.merchant_name,
+                t.merchant_entity_id,
+
                 t.amount,
+                t.iso_currency_code,
+                t.unofficial_currency_code,
+
                 t.date,
                 t.authorized_date,
+                t.datetime,
+                t.authorized_datetime,
+
                 t.pending,
+                t.pending_transaction_id,
+
                 t.payment_channel,
+                t.transaction_type,
+                t.transaction_code,
+
                 t.logo_url,
                 t.website,
+                t.personal_finance_category_icon_url,
+
+                t.account_owner,
+                t.check_number,
+
+                // ---------------- CATEGORY ----------------
                 category = t.personal_finance_category == null ? null : new
                 {
                     t.personal_finance_category.primary,
                     t.personal_finance_category.detailed,
                     t.personal_finance_category.confidence_level
                 },
+
+                // ---------------- COUNTERPARTIES ----------------
+                counterparties = t.counterparties.Select(c => new
+                {
+                    c.Id,
+                    c.name,
+                    c.entity_id,
+                    c.logo_url,
+                    c.website,
+                    c.type,
+                    c.confidence_level,
+                    c.phone_number
+                }).ToList(),
+
+                // ---------------- LOCATION ----------------
+                location = t.location == null ? null : new
+                {
+                    t.location.address,
+                    t.location.city,
+                    t.location.region,
+                    t.location.country,
+                    t.location.postal_code,
+                    t.location.lat,
+                    t.location.lon,
+                    t.location.store_number
+                },
+
+                // ---------------- PAYMENT META ----------------
+                payment_meta = t.payment_meta == null ? null : new
+                {
+                    t.payment_meta.by_order_of,
+                    t.payment_meta.payee,
+                    t.payment_meta.payer,
+                    t.payment_meta.payment_method,
+                    t.payment_meta.payment_processor,
+                    t.payment_meta.ppd_id,
+                    t.payment_meta.reason,
+                    t.payment_meta.reference_number
+                },
+
+                // ---------------- ACCOUNT ----------------
                 account = new
                 {
                     t.bank_account_id,
-                    t.bank_account.name
+                    t.bank_account.name,
+                    t.bank_account.bank_connection_id
                 },
+
+                // ---------------- BANK ----------------
                 bank = new
                 {
                     t.bank_account.bank_connection_id,

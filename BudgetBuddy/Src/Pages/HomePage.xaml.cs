@@ -51,51 +51,51 @@ public partial class HomePage : ContentView
     {
         InitializeComponent();
 
-        var sampleTransactions = new List<Transaction>
-        {
-            new Transaction
-            {
-                Name = "Netflix",
-                Category = "Subscription",
-                Amount = -16.99,
-                Date = DateTime.Now
-            },
-            new Transaction
-            {
-                Name = "Side Job",
-                Category = "Income",
-                Amount = 150.00,
-                Date = DateTime.Now
-            },
-            new Transaction
-            {
-                Name = "Starbucks",
-                Category = "Coffee",
-                Amount = -5.75,
-                Date = DateTime.Now.AddDays(-1)
-            },
-            new Transaction
-            {
-                Name = "Starbucks",
-                Category = "Coffee",
-                Amount = -5.75,
-                Date = DateTime.Now.AddDays(-1)
-            },
-            new Transaction
-            {
-                Name = "Starbucks",
-                Category = "Coffee",
-                Amount = -5.75,
-                Date = DateTime.Now.AddDays(-1)
-            }
-        };
+        //var sampleTransactions = new List<Transaction>
+        //{
+        //    new Transaction
+        //    {
+        //        Name = "Netflix",
+        //        Category = "Subscription",
+        //        Amount = -16.99,
+        //        Date = DateTime.Now
+        //    },
+        //    new Transaction
+        //    {
+        //        Name = "Side Job",
+        //        Category = "Income",
+        //        Amount = 150.00,
+        //        Date = DateTime.Now
+        //    },
+        //    new Transaction
+        //    {
+        //        Name = "Starbucks",
+        //        Category = "Coffee",
+        //        Amount = -5.75,
+        //        Date = DateTime.Now.AddDays(-1)
+        //    },
+        //    new Transaction
+        //    {
+        //        Name = "Starbucks",
+        //        Category = "Coffee",
+        //        Amount = -5.75,
+        //        Date = DateTime.Now.AddDays(-1)
+        //    },
+        //    new Transaction
+        //    {
+        //        Name = "Starbucks",
+        //        Category = "Coffee",
+        //        Amount = -5.75,
+        //        Date = DateTime.Now.AddDays(-1)
+        //    }
+        //};
 
-        RecentTransactions = new ObservableCollection<TransactionGroup>(
-            sampleTransactions
-                .OrderByDescending(t => t.Date)
-                .GroupBy(t => t.Date.Date)
-                .Select(g => new TransactionGroup(g.Key, g))
-        );
+        //RecentTransactions = new ObservableCollection<TransactionGroup>(
+        //    sampleTransactions
+        //        .OrderByDescending(t => t.Date)
+        //        .GroupBy(t => t.Date.Date)
+        //        .Select(g => new TransactionGroup(g.Key, g))
+        //);
 
         Stats = new ObservableCollection<StatItem>
         {

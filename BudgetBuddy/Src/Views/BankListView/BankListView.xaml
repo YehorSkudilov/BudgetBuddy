@@ -140,7 +140,7 @@
                                                 <!-- FIX: Account.Balance -->
                                                 <Label
                                                     Grid.Column="1"
-                                                    Text="{Binding current}"
+                                                    Text="{Binding Current}"
                                                     TextColor="White"
                                                     VerticalOptions="Center" />
 

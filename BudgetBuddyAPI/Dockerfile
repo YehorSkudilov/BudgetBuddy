@@ -12,7 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["BudgetBuddyAPI/BudgetBuddyAPI.csproj", "BudgetBuddyAPI/"]
+COPY ["BudgetBuddyAPI.csproj", "BudgetBuddyAPI/"]
 RUN dotnet restore "./BudgetBuddyAPI/BudgetBuddyAPI.csproj"
 COPY . .
 WORKDIR "/src/BudgetBuddyAPI"
