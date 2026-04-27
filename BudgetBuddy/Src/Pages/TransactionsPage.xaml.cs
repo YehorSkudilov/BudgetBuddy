@@ -1,5 +1,7 @@
 using AppSkeleton;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace BudgetBuddy;
 
@@ -39,6 +41,8 @@ public partial class TransactionsPage : ContentView
     async void LoadTransactions()
     {
         var transactions = await ApiCommunicators.Finance.GetAllTransactionsAsync();
+
+        Debug.WriteLine(JsonSerializer.Serialize(transactions));
 
         TransactionsGroups = new ObservableCollection<TransactionGroup>(
             transactions

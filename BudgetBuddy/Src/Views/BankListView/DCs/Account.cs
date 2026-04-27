@@ -6,7 +6,7 @@ public class Account
 
     public string Name { get; set; }
 
-    public double Balance { get; set; }
+    public double Current { get; set; }
 
     public string Type { get; set; }
 

@@ -8,7 +8,7 @@ public class BankConnection : INotifyPropertyChanged
 {
     public int Id { get; set; }
 
-    public string InstitutionName { get; set; }
+    public string Institution_Name { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

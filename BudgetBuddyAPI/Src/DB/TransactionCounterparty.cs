@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-[Owned]
 public class TransactionCounterparty
 {
+    public Guid Id { get; set; }
     public string? name { get; set; }
     public string? entity_id { get; set; }
     public string? logo_url { get; set; }

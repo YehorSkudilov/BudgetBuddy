@@ -70,7 +70,7 @@ public class PlaidController : ControllerBase
             access_token = accessToken,
             item_id = itemId,
             institution_id = institution.id,
-            user_id = req.user_id,
+            user_id = Guid.Empty,
             created_at = DateTime.UtcNow
         };
 
@@ -193,7 +193,7 @@ public class PlaidController : ControllerBase
     // TRANSACTION SYNC
     // =========================
     private async Task<(int added, int modified, int removed, string cursor)>
-        SyncTransactionsAsync(BankConnection bank, Dictionary<string, int> accountsMap)
+      SyncTransactionsAsync(BankConnection bank, Dictionary<string, int> accountsMap)
     {
         int added = 0, modified = 0, removed = 0;
 
@@ -208,25 +208,51 @@ public class PlaidController : ControllerBase
 
         while (true)
         {
+            // =========================
             // ADD
+            // =========================
             foreach (var t in plaidAdded)
             {
                 if (txMap.ContainsKey(t.transaction_id)) continue;
                 if (!accountsMap.TryGetValue(t.account_id, out var accountId)) continue;
 
-                t.id = 0;
-                t.bank_account_id = accountId;
-                toAdd.Add(t);
-                txMap[t.transaction_id] = t;
+                var entity = new Transaction
+                {
+                    transaction_id = t.transaction_id,
+                    account_id = t.account_id,
+                    amount = (decimal)t.amount,
+                    name = t.name,
+                    merchant_name = t.merchant_name,
+                    iso_currency_code = t.iso_currency_code,
+                    date = t.date,
+                    authorized_date = t.authorized_date,
+                    pending = t.pending,
+                    payment_channel = t.payment_channel,
+                    transaction_type = t.transaction_type,
+                    logo_url = t.logo_url,
+                    website = t.website,
+                    bank_account_id = accountId,
+
+                    counterparties = t.counterparties?.Select(c => new TransactionCounterparty
+                    {
+                        name = c.name,
+                        type = c.type
+                    }).ToList() ?? new()
+                };
+
+                toAdd.Add(entity);
+                txMap[t.transaction_id] = entity;
                 added++;
             }
 
+            // =========================
             // MODIFY
+            // =========================
             foreach (var t in plaidModified)
             {
                 if (!txMap.TryGetValue(t.transaction_id, out var existing)) continue;
 
-                existing.amount = t.amount;
+                existing.amount = (decimal)t.amount;
                 existing.name = t.name;
                 existing.merchant_name = t.merchant_name;
                 existing.date = t.date;
@@ -235,15 +261,26 @@ public class PlaidController : ControllerBase
                 existing.payment_channel = t.payment_channel;
                 existing.logo_url = t.logo_url;
                 existing.website = t.website;
-                existing.personal_finance_category = t.personal_finance_category;
-                existing.counterparties = t.counterparties;
+
+                // IMPORTANT FIX: map properly instead of direct assignment
+                existing.counterparties = t.counterparties?
+                    .Select(c => new TransactionCounterparty
+                    {
+                        name = c.name,
+                        type = c.type
+                    })
+                    .ToList() ?? new();
+
                 modified++;
             }
 
+            // =========================
             // REMOVE
+            // =========================
             foreach (var txId in plaidRemoved)
             {
                 if (!txMap.TryGetValue(txId, out var existing)) continue;
+
                 _db.Transactions.Remove(existing);
                 txMap.Remove(txId);
                 removed++;
@@ -264,4 +301,5 @@ public class PlaidController : ControllerBase
     }
 }
 
-public record ExchangeRequest(string public_token, string user_id);
+    public record ExchangeRequest(string public_token);
+//public record ExchangeRequest(string public_token, Guid user_id);

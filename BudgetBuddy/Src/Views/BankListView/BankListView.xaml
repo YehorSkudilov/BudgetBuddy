@@ -56,7 +56,7 @@
                                     <Label
                                         FontAttributes="Bold"
                                         FontSize="16"
-                                        Text="{Binding InstitutionName}"
+                                        Text="{Binding Institution_Name}"
                                         TextColor="White"
                                         VerticalOptions="Center" />
 
@@ -140,7 +140,7 @@
                                                 <!-- FIX: Account.Balance -->
                                                 <Label
                                                     Grid.Column="1"
-                                                    Text="{Binding Balance}"
+                                                    Text="{Binding current}"
                                                     TextColor="White"
                                                     VerticalOptions="Center" />
 

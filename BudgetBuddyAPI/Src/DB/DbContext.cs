@@ -55,7 +55,11 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Transaction>()
             .OwnsOne(t => t.personal_finance_category);
 
+
         modelBuilder.Entity<Transaction>()
-            .OwnsMany(t => t.counterparties);
+            .HasMany(t => t.counterparties)
+            .WithOne()
+            .HasForeignKey("TransactionId")
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
