@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace BudgetBuddy;
 
-public class Bank : INotifyPropertyChanged
+public class BankConnection : INotifyPropertyChanged
 {
     public int Id { get; set; }
 

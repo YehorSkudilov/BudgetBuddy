@@ -1,5 +1,6 @@
 using AppSkeleton;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace BudgetBuddy;
 
@@ -21,11 +22,11 @@ public partial class HomePage : ContentView
     }
 
     public static readonly BindableProperty MoneyValuesProperty =
-    BindableProperty.Create(
-        nameof(MoneyValues),
-        typeof(ObservableCollection<CChartEntry>),
-        typeof(HomePage),
-        new ObservableCollection<CChartEntry>());
+        BindableProperty.Create(
+            nameof(MoneyValues),
+            typeof(ObservableCollection<CChartEntry>),
+            typeof(HomePage),
+            new ObservableCollection<CChartEntry>());
 
     public ObservableCollection<CChartEntry> MoneyValues
     {
@@ -45,26 +46,56 @@ public partial class HomePage : ContentView
         get => (ObservableCollection<StatItem>)GetValue(StatsProperty);
         set => SetValue(StatsProperty, value);
     }
+
     public HomePage()
     {
         InitializeComponent();
 
-        var sampleTransactions = new List<TransactionItem>
+        var sampleTransactions = new List<Transaction>
         {
-            new TransactionItem { Title = "Netflix", Subtitle = "Subscription", Amount = -16.99m, IsIncome = false, DateTime = DateTime.Now },
-            new TransactionItem { Title = "Side Job", Subtitle = "Design Work", Amount = 150.00m, IsIncome = true, DateTime = DateTime.Now },
-            new TransactionItem { Title = "Starbucks", Subtitle = "Coffee", Amount = -5.75m, IsIncome = false, DateTime = DateTime.Now.AddDays(-1) },
-                        new TransactionItem { Title = "Starbucks", Subtitle = "Coffee", Amount = -5.75m, IsIncome = false, DateTime = DateTime.Now.AddDays(-1) },
-                                    new TransactionItem { Title = "Starbucks", Subtitle = "Coffee", Amount = -5.75m, IsIncome = false, DateTime = DateTime.Now.AddDays(-1) }
-
+            new Transaction
+            {
+                Name = "Netflix",
+                Category = "Subscription",
+                Amount = -16.99,
+                Date = DateTime.Now
+            },
+            new Transaction
+            {
+                Name = "Side Job",
+                Category = "Income",
+                Amount = 150.00,
+                Date = DateTime.Now
+            },
+            new Transaction
+            {
+                Name = "Starbucks",
+                Category = "Coffee",
+                Amount = -5.75,
+                Date = DateTime.Now.AddDays(-1)
+            },
+            new Transaction
+            {
+                Name = "Starbucks",
+                Category = "Coffee",
+                Amount = -5.75,
+                Date = DateTime.Now.AddDays(-1)
+            },
+            new Transaction
+            {
+                Name = "Starbucks",
+                Category = "Coffee",
+                Amount = -5.75,
+                Date = DateTime.Now.AddDays(-1)
+            }
         };
 
         RecentTransactions = new ObservableCollection<TransactionGroup>(
-    sampleTransactions
-        .OrderByDescending(t => t.DateTime)
-        .GroupBy(t => t.DateTime.Date)
-        .Select(g => new TransactionGroup(g.Key, g))
-);
+            sampleTransactions
+                .OrderByDescending(t => t.Date)
+                .GroupBy(t => t.Date.Date)
+                .Select(g => new TransactionGroup(g.Key, g))
+        );
 
         Stats = new ObservableCollection<StatItem>
         {
@@ -72,6 +103,7 @@ public partial class HomePage : ContentView
             new StatItem { Title = "Monthly", Value = "-$1,120", ValueColor = Color.FromArgb("#FF6B6B") },
             new StatItem { Title = "Savings", Value = "28%", ValueColor = Color.FromArgb("#4CD964") }
         };
+
         Values = new ObservableCollection<CChartEntry>
         {
             new CChartEntry { Label = "2024", Value = 500, Color = Colors.Red },

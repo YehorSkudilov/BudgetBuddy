@@ -1,4 +1,4 @@
-﻿namespace BudgetBuddy.Services;
+﻿namespace BudgetBuddy;
 
 public static class ApiCommunicators
 {

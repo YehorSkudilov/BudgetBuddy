@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 
-namespace BudgetBuddy.Services;
+namespace BudgetBuddy;
 
 public class Plaid
 {

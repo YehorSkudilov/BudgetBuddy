@@ -7,6 +7,7 @@ namespace BudgetBuddy
         public App()
         {
             InitializeComponent();
+            Application.Current.UserAppTheme = AppTheme.Dark;
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

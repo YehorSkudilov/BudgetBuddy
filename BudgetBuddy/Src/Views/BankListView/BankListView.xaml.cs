@@ -16,19 +16,19 @@ public partial class BankListView : ContentView
     public static readonly BindableProperty BankItemsProperty =
         BindableProperty.Create(
             nameof(BankItems),
-            typeof(ObservableCollection<Bank>),
+            typeof(ObservableCollection<BankConnection>),
             typeof(BankListView),
-            new ObservableCollection<Bank>());
+            new ObservableCollection<BankConnection>());
 
-    public ObservableCollection<Bank> BankItems
+    public ObservableCollection<BankConnection> BankItems
     {
-        get => (ObservableCollection<Bank>)GetValue(BankItemsProperty);
+        get => (ObservableCollection<BankConnection>)GetValue(BankItemsProperty);
         set => SetValue(BankItemsProperty, value);
     }
 
     private void OnBankTapped(object sender, EventArgs e)
     {
-        if (sender is Grid grid && grid.BindingContext is Bank bank)
+        if (sender is Grid grid && grid.BindingContext is BankConnection bank)
         {
             bank.IsExpanded = !bank.IsExpanded;
         }

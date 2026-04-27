@@ -1,4 +1,3 @@
-using BudgetBuddy.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -28,9 +27,9 @@ public partial class BanksPage : ContentView, INotifyPropertyChanged
     // -----------------------------
     // REACTIVE BANKS COLLECTION
     // -----------------------------
-    private ObservableCollection<Bank> _banks = new();
+    private ObservableCollection<BankConnection> _banks = new();
 
-    public ObservableCollection<Bank> Banks
+    public ObservableCollection<BankConnection> Banks
     {
         get => _banks;
         set
@@ -53,7 +52,7 @@ public partial class BanksPage : ContentView, INotifyPropertyChanged
             if (result == null)
                 return;
 
-            Banks = new ObservableCollection<Bank>(result);
+            Banks = new ObservableCollection<BankConnection>(result);
         }
         catch (Exception ex)
         {

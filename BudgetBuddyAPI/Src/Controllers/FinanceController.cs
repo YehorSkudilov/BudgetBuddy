@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Principal;
 
 namespace BudgetBuddyAPI;
 
@@ -17,99 +16,69 @@ public class FinanceController : ControllerBase
 
     private decimal Normalize(decimal amount, BankAccount account)
     {
-        var type = account.Type?.ToLowerInvariant() ?? "";
-        var subtype = account.Subtype?.ToLowerInvariant() ?? "";
+        var type = account.type?.ToLowerInvariant() ?? "";
+        var isLiability = type.Contains("credit") || type.Contains("loan");
 
-        var isLiability =
-            type.Contains("credit") ||
-            type.Contains("loan");
-
-
-        if (!isLiability)
-            return amount;
-
-
+        if (!isLiability) return amount;
         return amount > 0 ? -amount : Math.Abs(amount);
     }
 
+    // =========================
+    // TOTAL BALANCE
+    // =========================
     [HttpGet("[action]")]
     public async Task<IActionResult> GetTotalBalance()
     {
         var accounts = await _db.BankAccounts.ToListAsync();
 
-        decimal total = accounts.Sum(a =>
-            Normalize(a.Balance ?? 0, a)
-        );
+        decimal total = accounts.Sum(a => Normalize(a.balances.current, a));
 
-        return Ok(new
-        {
-            totalBalance = total
-        });
+        return Ok(new { total_balance = total });
     }
-
 
     [HttpGet("[action]/{bankId}")]
     public async Task<IActionResult> GetTotalBalanceByBank(int bankId)
     {
         var accounts = await _db.BankAccounts
-            .Where(a => a.BankConnectionId == bankId)
-            .Include(a => a.BankConnection)
+            .Where(a => a.bank_connection_id == bankId)
+            .Include(a => a.bank_connection)
+                .ThenInclude(c => c.institution)
             .ToListAsync();
 
         if (!accounts.Any())
-        {
             return NotFound("No accounts found for this bank.");
-        }
 
-        var bankName = accounts.First().BankConnection.InstitutionName;
-
-        var totalBalance = accounts.Sum(a =>
-            Normalize(a.Balance ?? 0, a)
-        );
+        var institution = accounts.First().bank_connection.institution;
+        var total = accounts.Sum(a => Normalize(a.balances.current, a));
 
         return Ok(new
         {
-            bankId,
-            bankName,
-            totalBalance
+            bank_id = bankId,
+            institution_name = institution.name,
+            total_balance = total
         });
     }
 
     // =========================
-    // GET CURRENT MONTH SUMMARY
+    // RANGE SUMMARY
     // =========================
     [HttpGet("[action]")]
     public async Task<IActionResult> GetRangeSummary(
-     [FromQuery] DateTime? from,
-     [FromQuery] DateTime? to)
+        [FromQuery] DateTime? from,
+        [FromQuery] DateTime? to)
     {
         if (from == null || to == null)
-        {
-            return BadRequest(new
-            {
-                message = "Both 'from' and 'to' query parameters are required."
-            });
-        }
+            return BadRequest(new { message = "Both 'from' and 'to' query parameters are required." });
 
         if (from >= to)
-        {
-            return BadRequest(new
-            {
-                message = "'from' must be earlier than 'to'."
-            });
-        }
+            return BadRequest(new { message = "'from' must be earlier than 'to'." });
 
         var transactions = await _db.Transactions
-            .Where(t => t.Date >= from && t.Date < to)
+            .Where(t => t.date >= from && t.date < to)
             .ToListAsync();
 
-        decimal income = transactions
-            .Where(t => t.Amount < 0)
-            .Sum(t => Math.Abs(t.Amount));
-
-        decimal expenses = transactions
-            .Where(t => t.Amount > 0)
-            .Sum(t => t.Amount);
+        decimal income = transactions.Where(t => t.amount < 0).Sum(t => Math.Abs(t.amount));
+        decimal expenses = transactions.Where(t => t.amount > 0).Sum(t => t.amount);
 
         return Ok(new
         {
@@ -122,25 +91,28 @@ public class FinanceController : ControllerBase
     }
 
     // =========================
-    // GET BANKS
+    // BANKS
     // =========================
     [HttpGet("[action]")]
     public async Task<IActionResult> GetAllBanks()
     {
         var banks = await _db.BankConnections
-            .Include(b => b.Accounts)
+            .Include(b => b.institution)
+            .Include(b => b.accounts)
             .Select(b => new
             {
-                b.Id,
-                b.InstitutionName,
-                b.CreatedAt,
-                Accounts = b.Accounts.Select(a => new
+                b.id,
+                institution_name = b.institution.name,
+                b.created_at,
+                accounts = b.accounts.Select(a => new
                 {
-                    a.Id,
-                    a.Name,
-                    a.Type,
-                    a.Subtype,
-                    a.Balance
+                    a.id,
+                    a.account_id,
+                    a.name,
+                    a.type,
+                    a.subtype,
+                    a.balances.current,
+                    a.balances.available
                 })
             })
             .ToListAsync();
@@ -148,46 +120,60 @@ public class FinanceController : ControllerBase
         return Ok(banks);
     }
 
-
     // =========================
     // ACCOUNTS
     // =========================
-    [HttpGet("[action]/{bankId}")]
-    public async Task<IActionResult> GetAccountsForBank(int bankId)
+    [HttpGet("[action]")]
+    public async Task<IActionResult> GetAllAccounts()
     {
         var accounts = await _db.BankAccounts
-            .Where(a => a.BankConnectionId == bankId)
+            .Include(a => a.bank_connection)
+                .ThenInclude(c => c.institution)
             .Select(a => new
             {
-                a.Id,
-                a.PlaidAccountId,
-                a.Name,
-                a.Type,
-                a.Subtype,
-                a.Balance
+                a.id,
+                a.account_id,
+                a.name,
+                a.official_name,
+                a.type,
+                a.subtype,
+                a.mask,
+                balances = new
+                {
+                    a.balances.current,
+                    a.balances.available,
+                    a.balances.iso_currency_code
+                },
+                bank = new
+                {
+                    a.bank_connection_id,
+                    institution_name = a.bank_connection.institution.name
+                }
             })
             .ToListAsync();
 
         return Ok(accounts);
     }
 
-    [HttpGet("[action]")]
-    public async Task<IActionResult> GetAllAccounts()
+    [HttpGet("[action]/{bankId}")]
+    public async Task<IActionResult> GetAccountsForBank(int bankId)
     {
         var accounts = await _db.BankAccounts
-            .Include(a => a.BankConnection)
+            .Where(a => a.bank_connection_id == bankId)
             .Select(a => new
             {
-                a.Id,
-                a.PlaidAccountId,
-                a.Name,
-                a.Type,
-                a.Subtype,
-                a.Balance,
-                Bank = new
+                a.id,
+                a.account_id,
+                a.name,
+                a.official_name,
+                a.type,
+                a.subtype,
+                a.mask,
+                balances = new
                 {
-                    a.BankConnectionId,
-                    a.BankConnection.InstitutionName
+                    a.balances.current,
+                    a.balances.available,
+                    a.balances.iso_currency_code
                 }
             })
             .ToListAsync();
@@ -198,20 +184,43 @@ public class FinanceController : ControllerBase
     // =========================
     // TRANSACTIONS
     // =========================
-    [HttpGet("[action]/{accountId}")]
-    public async Task<IActionResult> GetTransactionsForAccount(int accountId)
+    [HttpGet("[action]")]
+    public async Task<IActionResult> GetAllTransactions()
     {
         var transactions = await _db.Transactions
-            .Where(t => t.BankAccountId == accountId)
-            .OrderByDescending(t => t.Date)
+            .Include(t => t.bank_account)
+                .ThenInclude(a => a.bank_connection)
+                    .ThenInclude(c => c.institution)
+            .OrderByDescending(t => t.date)
             .Select(t => new
             {
-                t.Id,
-                t.PlaidTransactionId,
-                t.Name,
-                t.Amount,
-                t.Category,
-                t.Date
+                t.id,
+                t.transaction_id,
+                t.name,
+                t.merchant_name,
+                t.amount,
+                t.date,
+                t.authorized_date,
+                t.pending,
+                t.payment_channel,
+                t.logo_url,
+                t.website,
+                category = t.personal_finance_category == null ? null : new
+                {
+                    t.personal_finance_category.primary,
+                    t.personal_finance_category.detailed,
+                    t.personal_finance_category.confidence_level
+                },
+                account = new
+                {
+                    t.bank_account_id,
+                    t.bank_account.name
+                },
+                bank = new
+                {
+                    t.bank_account.bank_connection_id,
+                    institution_name = t.bank_account.bank_connection.institution.name
+                }
             })
             .ToListAsync();
 
@@ -222,20 +231,28 @@ public class FinanceController : ControllerBase
     public async Task<IActionResult> GetTransactionsForBank(int bankId)
     {
         var transactions = await _db.Transactions
-            .Where(t => t.BankAccount.BankConnectionId == bankId)
-            .OrderByDescending(t => t.Date)
+            .Where(t => t.bank_account.bank_connection_id == bankId)
+            .OrderByDescending(t => t.date)
             .Select(t => new
             {
-                t.Id,
-                t.PlaidTransactionId,
-                t.Name,
-                t.Amount,
-                t.Category,
-                t.Date,
-                Account = new
+                t.id,
+                t.transaction_id,
+                t.name,
+                t.merchant_name,
+                t.amount,
+                t.date,
+                t.pending,
+                t.payment_channel,
+                t.logo_url,
+                category = t.personal_finance_category == null ? null : new
                 {
-                    t.BankAccountId,
-                    t.BankAccount.Name
+                    t.personal_finance_category.primary,
+                    t.personal_finance_category.detailed
+                },
+                account = new
+                {
+                    t.bank_account_id,
+                    t.bank_account.name
                 }
             })
             .ToListAsync();
@@ -243,30 +260,27 @@ public class FinanceController : ControllerBase
         return Ok(transactions);
     }
 
-    [HttpGet("[action]")]
-    public async Task<IActionResult> GetAllTransactions()
+    [HttpGet("[action]/{accountId}")]
+    public async Task<IActionResult> GetTransactionsForAccount(int accountId)
     {
         var transactions = await _db.Transactions
-            .Include(t => t.BankAccount)
-            .ThenInclude(a => a.BankConnection)
-            .OrderByDescending(t => t.Date)
+            .Where(t => t.bank_account_id == accountId)
+            .OrderByDescending(t => t.date)
             .Select(t => new
             {
-                t.Id,
-                t.PlaidTransactionId,
-                t.Name,
-                t.Amount,
-                t.Category,
-                t.Date,
-                Account = new
+                t.id,
+                t.transaction_id,
+                t.name,
+                t.merchant_name,
+                t.amount,
+                t.date,
+                t.pending,
+                t.payment_channel,
+                t.logo_url,
+                category = t.personal_finance_category == null ? null : new
                 {
-                    t.BankAccountId,
-                    t.BankAccount.Name
-                },
-                Bank = new
-                {
-                    t.BankAccount.BankConnectionId,
-                    t.BankAccount.BankConnection.InstitutionName
+                    t.personal_finance_category.primary,
+                    t.personal_finance_category.detailed
                 }
             })
             .ToListAsync();

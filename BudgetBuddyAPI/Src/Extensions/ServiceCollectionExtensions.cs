@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddDbContext<AppDbContext>(opt =>
-    opt.UseSqlite("Data Source=budgetbuddy.db"));
+            opt.UseSqlite("Data Source=budgetbuddy.db"));
         services.AddHttpClient<PlaidClient>();
 
         return services;
