@@ -5,7 +5,9 @@ namespace BudgetBuddyAPI;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddAppServices(this IServiceCollection services, WebApplicationBuilder builder)
+    public static IServiceCollection AddAppServices(
+        this IServiceCollection services,
+        IConfiguration config)
     {
         services.AddControllers();
 
@@ -14,7 +16,7 @@ public static class ServiceCollectionExtensions
         //services.AddDbContext<AppDbContext>(opt =>
         //    opt.UseSqlite("Data Source=budgetbuddy.db"));
         services.AddDbContext<AppDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+    opt.UseNpgsql(config.GetConnectionString("Default")));
         services.AddHttpClient<PlaidClient>();
 
         return services;

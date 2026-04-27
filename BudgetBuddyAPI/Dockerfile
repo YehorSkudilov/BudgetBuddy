@@ -1,35 +1,24 @@
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# your chosen line (kept)
-COPY ["BudgetBuddyAPI.csproj", "BudgetBuddyAPI/"]
+# copy csproj directly
+COPY ["BudgetBuddyAPI.csproj", "."]
 
-# FIXED: restore must match actual path after copy
-RUN dotnet restore "BudgetBuddyAPI/BudgetBuddyAPI.csproj"
+RUN dotnet restore "BudgetBuddyAPI.csproj"
 
-# copy everything else into image
+# copy everything
 COPY . .
 
-# FIXED: correct working directory
-WORKDIR /src/BudgetBuddyAPI
-
-# build using correct path
-RUN dotnet build "BudgetBuddyAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "BudgetBuddyAPI.csproj" -c Release -o /app/build
 
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-
-# FIXED: publish path
-RUN dotnet publish "BudgetBuddyAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "BudgetBuddyAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
-
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "BudgetBuddyAPI.dll"]
