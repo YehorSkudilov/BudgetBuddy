@@ -8,7 +8,6 @@ namespace BudgetBuddy;
 
 public partial class BanksPage : CContentView, INotifyPropertyChanged
 {
-    private string _plaidHtml;
     private string _plaidToken;
     private bool _plaidReady = false;
 
@@ -20,7 +19,6 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
         BindingContext = this;
 
         XWebView.Navigating += XWebView_Navigating;
-        XWebView.Navigated += XWebView_Navigated;
 
         _ = InitAsync();
     }
@@ -40,7 +38,6 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
     {
         try
         {
-            await LoadPlaidHtmlAsync();
             await LoadBanksAsync();
         }
         catch (Exception ex)
@@ -109,7 +106,7 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
             _plaidToken = await ApiCommunicators.Plaid.CreateLinkTokenAsync();
             _plaidReady = true;
 
-            XWebView.Source = new HtmlWebViewSource { Html = _plaidHtml };
+            XWebView.Source = new HtmlWebViewSource { Html = ApiCommunicators.BaseUrl + "/plaid.html" };
                         IsWebViewOpen = true;
 
         }
@@ -120,47 +117,6 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
         }
     }
 
-    // -----------------------------
-    // LOAD PLAID HTML ONCE
-    // -----------------------------
-    private async Task LoadPlaidHtmlAsync()
-    {
-        try
-        {
-            using var stream = await FileSystem.OpenAppPackageFileAsync("plaid.html");
-            using var reader = new StreamReader(stream);
-
-            _plaidHtml = await reader.ReadToEndAsync();
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine("HTML load error: " + ex);
-        }
-    }
-
-    // -----------------------------
-    // WEBVIEW NAVIGATED
-    // -----------------------------
-    private async void XWebView_Navigated(object sender, WebNavigatedEventArgs e)
-    {
-        if (!_plaidReady || string.IsNullOrEmpty(_plaidToken))
-            return;
-
-        try
-        {
-            await Task.Delay(300);
-
-            await XWebView.EvaluateJavaScriptAsync($@"
-                if (window.startPlaid) {{
-                    startPlaid('{_plaidToken}');
-                }}
-            ");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine("JS inject error: " + ex);
-        }
-    }
 
     // -----------------------------
     // CALLBACK HANDLER
@@ -170,6 +126,24 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
         if (string.IsNullOrEmpty(e.Url))
             return;
 
+        // 🔥 NEW: JS is ready → start Plaid here
+        if (e.Url.StartsWith("maui://plaid-ready"))
+        {
+            e.Cancel = true;
+
+            if (_plaidReady && !string.IsNullOrEmpty(_plaidToken))
+            {
+                var safeToken = _plaidToken.Replace("'", "\\'");
+
+                await XWebView.EvaluateJavaScriptAsync(
+                    $"startPlaid('{safeToken}')"
+                );
+            }
+
+            return;
+        }
+
+        // existing success/exit logic
         if (!e.Url.StartsWith("maui://plaid-success") &&
             !e.Url.StartsWith("maui://plaid-exit"))
             return;
