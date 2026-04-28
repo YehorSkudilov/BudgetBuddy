@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace BudgetBuddy;
 
-public partial class BanksPage : ContentView, INotifyPropertyChanged
+public partial class BanksPage : CContentView, INotifyPropertyChanged
 {
     private string _plaidHtml;
     private string _plaidToken;
@@ -25,14 +25,12 @@ public partial class BanksPage : ContentView, INotifyPropertyChanged
         _ = InitAsync();
     }
 
-    protected override void OnAppearing()
+    public override void OnAppearing()
 {
-    base.OnAppearing();
 
     OnIsWebViewOpenChanged(true);
     LoadBanksAsync();
 
-    MyView?.OnAppearing(); // call into your ContentView
 }
 
     // -----------------------------

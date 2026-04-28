@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace BudgetBuddy;
 
-public partial class HomePage : ContentView
+public partial class HomePage : CContentView
 {
     public ObservableCollection<TransactionGroup> RecentTransactions { get; set; }
 

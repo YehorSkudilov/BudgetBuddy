@@ -1,5 +1,5 @@
 namespace BudgetBuddy;
-public partial class Test : ContentView
+public partial class Test : CContentView
 {
 	public Test()
 	{

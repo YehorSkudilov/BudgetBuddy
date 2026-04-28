@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 namespace BudgetBuddy;
 
-public partial class SettingsPage : ContentView
+public partial class SettingsPage : CContentView
 {
 	public SettingsPage()
 	{

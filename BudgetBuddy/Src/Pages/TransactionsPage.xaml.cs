@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace BudgetBuddy;
 
-public partial class TransactionsPage : ContentView
+public partial class TransactionsPage : CContentView
 {
     public static readonly BindableProperty TransactionsGroupsProperty =
     BindableProperty.Create(
@@ -49,13 +49,11 @@ public partial class TransactionsPage : ContentView
         MainGrid.BindingContext = this;
     }
 
-        protected override void OnAppearing()
-{
-    base.OnAppearing();
+    public void OnAppearing()
+    {
 
-    LoadTransactions();
+        LoadTransactions();
 
-    MyView?.OnAppearing(); // call into your ContentView
 }
 
     async void LoadTransactions()

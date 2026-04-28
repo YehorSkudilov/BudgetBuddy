@@ -49,9 +49,10 @@ private readonly GoalsPage _goalsPage = new();
         MainGrid.BindingContext = this;
     }
 
-    void SetContent(ContentView content, string name)
+    void SetContent(CContentView content, string name)
     {
         TopBar.Deselect();
+
         View.SetContent(content);
         PageName = name;
     }

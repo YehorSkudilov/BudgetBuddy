@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace BudgetBuddy;
 
-public partial class BudgetPage : ContentView
+public partial class BudgetPage : CContentView
 {
     public static readonly BindableProperty ValuesProperty =
         BindableProperty.Create(
