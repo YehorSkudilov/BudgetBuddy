@@ -4,37 +4,86 @@
     <meta charset="utf-8" />
     <title>Plaid</title>
 
+    <!-- Plaid SDK -->
     <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 </head>
 
 <body>
 
     <script>
+        // -----------------------------
+        // GLOBAL ERROR HANDLER (debugging)
+        // -----------------------------
+        window.onerror = function (msg, url, line, col, error) {
+            try {
+                window.location.href =
+                    "maui://plaid-exit?data=" +
+                    encodeURIComponent(JSON.stringify({
+                        error: msg,
+                        line: line,
+                        col: col
+                    }));
+            } catch { }
+        };
+
+        // -----------------------------
+        // START PLAID (called from MAUI)
+        // -----------------------------
         function startPlaid(linkToken) {
-
-            const handler = Plaid.create({
-                token: linkToken,
-
-                onSuccess: function (public_token, metadata) {
-                    window.location.href =
-                        "maui://plaid-success?data=" +
-                        encodeURIComponent(JSON.stringify({
-                            public_token: public_token
-                        }));
-                },
-
-                onExit: function (err, metadata) {
-                    window.location.href =
-                        "maui://plaid-exit?data=" +
-                        encodeURIComponent(JSON.stringify({ err, metadata }));
+            try {
+                if (!window.Plaid) {
+                    throw new Error("Plaid SDK not loaded");
                 }
-            });
 
-            handler.open();
+                const handler = Plaid.create({
+                    token: linkToken,
+
+                    onSuccess: function (public_token, metadata) {
+                        window.location.href =
+                            "maui://plaid-success?data=" +
+                            encodeURIComponent(JSON.stringify({
+                                public_token: public_token
+                            }));
+                    },
+
+                    onExit: function (err, metadata) {
+                        window.location.href =
+                            "maui://plaid-exit?data=" +
+                            encodeURIComponent(JSON.stringify({
+                                err: err,
+                                metadata: metadata
+                            }));
+                    }
+                });
+
+                handler.open();
+            }
+            catch (ex) {
+                window.location.href =
+                    "maui://plaid-exit?data=" +
+                    encodeURIComponent(JSON.stringify({
+                        error: ex.message
+                    }));
+            }
         }
 
-        // 🔥 ADD THIS LINE (critical)
-        window.location.href = "maui://plaid-ready";
+        // -----------------------------
+        // SIGNAL MAUI WHEN READY
+        // -----------------------------
+        window.addEventListener("load", function () {
+
+            // Wait until Plaid SDK is actually available
+            const waitForPlaid = setInterval(() => {
+
+                if (window.Plaid && window.Plaid.create) {
+                    clearInterval(waitForPlaid);
+
+                    // Notify MAUI it's safe to start
+                    window.location.href = "maui://plaid-ready";
+                }
+
+            }, 50);
+        });
     </script>
 
 </body>

@@ -25,7 +25,6 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
 
     public override void OnAppearing()
     {
-
         IsWebViewOpen = false;
          LoadBanksAsync();
 
