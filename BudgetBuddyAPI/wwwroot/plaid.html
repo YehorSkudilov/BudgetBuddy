@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plaid Connect</title>
+
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background: #0f0f0f; /* dark mode background */
+            color: white; /* default text color */
+        }
+
+        /* optional center content (if you add anything later) */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* fullscreen overlay */
+        #tokenScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0f0f;
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            padding: 20px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="tokenScreen"></div>
+
+    <script>
+        function showToken(token) {
+            const screen = document.getElementById("tokenScreen");
+            screen.style.display = "flex";
+            screen.innerText = token;
+        }
+
+        async function openLink() {
+            try {
+                const res = await fetch("https://budgetbuddyapi.yehorskudilov.com/api/plaid/CreateLinkToken", {
+                    method: "POST"
+                });
+
+                const data = await res.json();
+                const linkToken = data.link_token;
+
+                const handler = Plaid.create({
+                    token: linkToken,
+
+                    onSuccess: function (public_token, metadata) {
+                        console.log("PUBLIC TOKEN:", public_token);
+                        showToken(public_token);
+                    },
+
+                    onExit: function (err, metadata) {
+                        if (err) console.error("Plaid exit error:", err);
+                    }
+                });
+
+                handler.open();
+
+            } catch (err) {
+                console.error("Failed to open Plaid:", err);
+            }
+        }
+
+        window.onload = openLink;
+    </script>
+
+</body>
+</html>

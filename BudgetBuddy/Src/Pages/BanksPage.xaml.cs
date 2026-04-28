@@ -8,22 +8,17 @@ namespace BudgetBuddy;
 
 public partial class BanksPage : ContentView, INotifyPropertyChanged
 {
-    private readonly Finance _finance;
-
-    // cache plaid html so we don't reload file every time
     private string _plaidHtml;
-
     private string _plaidToken;
+    private bool _plaidReady = false;
 
     public BanksPage()
     {
         InitializeComponent();
 
-        _finance = new Finance();
 
         BindingContext = this;
 
-        // attach ONCE only
         XWebView.Navigating += XWebView_Navigating;
         XWebView.Navigated += XWebView_Navigated;
 
@@ -66,7 +61,7 @@ public partial class BanksPage : ContentView, INotifyPropertyChanged
     {
         try
         {
-            var result = await _finance.GetAllBanksAsync();
+            var result = await ApiCommunicators.Finance.GetAllBanksAsync();
 
             Banks = result != null
                 ? new ObservableCollection<BankConnection>(result)
@@ -102,15 +97,13 @@ public partial class BanksPage : ContentView, INotifyPropertyChanged
     {
         try
         {
-            IsWebViewOpen = true;
 
             _plaidToken = await ApiCommunicators.Plaid.CreateLinkTokenAsync();
+            _plaidReady = true;
 
-            // just assign cached HTML (fast)
-            XWebView.Source = new HtmlWebViewSource
-            {
-                Html = _plaidHtml
-            };
+            XWebView.Source = new HtmlWebViewSource { Html = _plaidHtml };
+                        IsWebViewOpen = true;
+
         }
         catch (Exception ex)
         {
@@ -138,11 +131,11 @@ public partial class BanksPage : ContentView, INotifyPropertyChanged
     }
 
     // -----------------------------
-    // WEBVIEW NAVIGATED (inject once)
+    // WEBVIEW NAVIGATED
     // -----------------------------
     private async void XWebView_Navigated(object sender, WebNavigatedEventArgs e)
     {
-        if (string.IsNullOrEmpty(_plaidToken))
+        if (!_plaidReady || string.IsNullOrEmpty(_plaidToken))
             return;
 
         try
@@ -216,7 +209,11 @@ public partial class BanksPage : ContentView, INotifyPropertyChanged
     private void OnIsWebViewOpenChanged(bool isOpen)
     {
         if (!isOpen)
+        {
+            _plaidReady = false;
+            _plaidToken = null;
             XWebView.Source = "about:blank";
+        }
     }
 
     // -----------------------------

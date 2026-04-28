@@ -24,18 +24,23 @@ public partial class CAppShell : ContentPage
         }
     }
 
-    public CAppShell()
-	{
-        InitializeComponent();
+private readonly GoalsPage _goalsPage = new();
+    private readonly TransactionsPage _transactionsPage = new();
+    private readonly HomePage _homePage = new();
+    private readonly BanksPage _banksPage = new();
+    private readonly BudgetPage _budgetPage = new();
 
+    public CAppShell()
+    {
+        InitializeComponent();
 
         CNavIconItems = new ObservableCollection<CNavItem>
         {
-            new CNavItem { Glyph = "savings", Color = Colors.White, Action = () =>{SetContent(new GoalsPage(), "Goals"); } },
-            new CNavItem { Glyph = "receipt", Color = Colors.White, Action = () =>{SetContent(new TransactionsPage(), "Transactions"); } },
-            new CNavItem { Glyph = "home", Color = Colors.White, Action = () =>{SetContent(new HomePage(), "Home"); } },
-            new CNavItem { Glyph = "account_balance", Color = Colors.White, Action = () =>{SetContent(new BanksPage(), "Banks"); } },
-            new CNavItem { Glyph = "account_balance_wallet", Color = Colors.White, Action = () =>{SetContent(new BudgetPage(), "Budget"); } }
+            new CNavItem { Glyph = "savings",           Color = Colors.White, Action = () => SetContent(_goalsPage,        "Goals") },
+            new CNavItem { Glyph = "receipt",           Color = Colors.White, Action = () => SetContent(_transactionsPage,  "Transactions") },
+            new CNavItem { Glyph = "home",              Color = Colors.White, Action = () => SetContent(_homePage,          "Home") },
+            new CNavItem { Glyph = "account_balance",   Color = Colors.White, Action = () => SetContent(_banksPage,         "Banks") },
+            new CNavItem { Glyph = "account_balance_wallet", Color = Colors.White, Action = () => SetContent(_budgetPage,   "Budget") },
         };
 
         SettingsAction = () => { SetContent(new SettingsPage(), "Settings"); NavBar.SelectItem(null); };
