@@ -106,7 +106,7 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
             _plaidToken = await ApiCommunicators.Plaid.CreateLinkTokenAsync();
             _plaidReady = true;
 
-            XWebView.Source = ApiCommunicators.BaseUrl + "/plaid.html" ;
+            XWebView.Source = ApiCommunicators.BaseUrl + "/api/plaid.html" ;
                         IsWebViewOpen = true;
 
         }
