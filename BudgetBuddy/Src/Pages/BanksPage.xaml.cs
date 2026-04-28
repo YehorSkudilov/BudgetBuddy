@@ -88,40 +88,27 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
 
     async Task<bool> SuccessPlaid(WebNavigatingEventArgs e)
     {
-        if (!e.Url.StartsWith("maui://plaid-success")) 
-        {
+        if (!e.Url.StartsWith("maui://plaid-success"))
             return false;
-        }
 
         e.Cancel = true;
 
         try
         {
             var uri = new Uri(e.Url);
-
-            var data = System.Web.HttpUtility
-                .ParseQueryString(uri.Query)
-                .Get("data");
+            var data = System.Web.HttpUtility.ParseQueryString(uri.Query).Get("data");
 
             if (!string.IsNullOrEmpty(data))
             {
                 var json = Uri.UnescapeDataString(data);
+                using var doc = JsonDocument.Parse(json);
 
-                if (e.Url.StartsWith("maui://plaid-success"))
+                if (doc.RootElement.TryGetProperty("public_token", out var token))
                 {
-                    using var doc = JsonDocument.Parse(json);
-
-                    if (doc.RootElement.TryGetProperty("public_token", out var token))
-                    {
-                        var publicToken = token.GetString();
-
-                        await ApiCommunicators.Plaid.ExchangePublicTokenAsync(publicToken);
-
-                        await LoadBanksAsync();
-                        Debug.WriteLine("SuccessPlaid");
-
-                        return true;
-                    }
+                    await ApiCommunicators.Plaid.ExchangePublicTokenAsync(token.GetString());
+                    ShowWebView(false); // <-- close after success
+                    await LoadBanksAsync();
+                    return true;
                 }
             }
         }
@@ -130,7 +117,6 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
             Debug.WriteLine(ex.ToString());
         }
         return false;
-
     }
 
     async Task<bool> InitPlaid(WebNavigatingEventArgs e)
@@ -166,16 +152,11 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
     // -----------------------------
     private async void XWebView_Navigating(object sender, WebNavigatingEventArgs e)
     {
-        if (string.IsNullOrEmpty(e.Url))
-            return;
+        if (string.IsNullOrEmpty(e.Url)) return;
 
-        bool initPlaid = await InitPlaid(e);
-
-        bool exitPlaid = await ExitPlaid(e);
-
-        bool successPaid = await SuccessPlaid(e);
-
-        //ShowWebView(!exitPlaid || !successPaid);
+        if (await InitPlaid(e)) return;
+        if (await ExitPlaid(e)) return;
+        if (await SuccessPlaid(e)) return;
     }
 
     // -----------------------------
@@ -185,8 +166,16 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
     {
         if (open)
         {
-            WebViewBorder.IsVisible = true;
+            // Fetch token FIRST, then load the page
             plaidToken = await ApiCommunicators.Plaid.CreateLinkTokenAsync();
+
+            if (string.IsNullOrEmpty(plaidToken))
+            {
+                Debug.WriteLine("Failed to get Plaid token");
+                return;
+            }
+
+            WebViewBorder.IsVisible = true;
             XWebView.Source = ApiCommunicators.BaseUrl + "/api/plaid.html";
         }
         else
@@ -195,7 +184,6 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
             await Task.Delay(1000);
             plaidToken = null;
             WebViewBorder.IsVisible = false;
-
         }
     }
 
