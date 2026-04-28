@@ -49,12 +49,12 @@ public partial class TransactionsPage : CContentView
         MainGrid.BindingContext = this;
     }
 
-    public void OnAppearing()
+    public override void OnAppearing()
     {
 
         LoadTransactions();
 
-}
+    }
 
     async void LoadTransactions()
     {
