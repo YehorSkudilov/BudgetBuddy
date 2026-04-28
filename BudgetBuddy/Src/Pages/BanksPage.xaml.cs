@@ -26,12 +26,13 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
     }
 
     public override void OnAppearing()
-{
+    {
 
-    OnIsWebViewOpenChanged(true);
-    LoadBanksAsync();
+        Debug.WriteLine("OnAppearing");
+        IsWebViewOpen = false;
+         LoadBanksAsync();
 
-}
+    }
 
     // -----------------------------
     // INIT

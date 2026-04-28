@@ -52,7 +52,7 @@ private readonly GoalsPage _goalsPage = new();
     void SetContent(CContentView content, string name)
     {
         TopBar.Deselect();
-
+        content.OnAppearing();
         View.SetContent(content);
         PageName = name;
     }
