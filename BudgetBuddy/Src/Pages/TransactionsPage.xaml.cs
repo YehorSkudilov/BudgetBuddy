@@ -49,6 +49,15 @@ public partial class TransactionsPage : ContentView
         MainGrid.BindingContext = this;
     }
 
+        protected override void OnAppearing()
+{
+    base.OnAppearing();
+
+    LoadTransactions();
+
+    MyView?.OnAppearing(); // call into your ContentView
+}
+
     async void LoadTransactions()
     {
         var transactions = await ApiCommunicators.Finance.GetAllTransactionsAsync();

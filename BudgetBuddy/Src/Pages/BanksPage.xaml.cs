@@ -25,6 +25,16 @@ public partial class BanksPage : ContentView, INotifyPropertyChanged
         _ = InitAsync();
     }
 
+    protected override void OnAppearing()
+{
+    base.OnAppearing();
+
+    OnIsWebViewOpenChanged(true);
+    LoadBanksAsync();
+
+    MyView?.OnAppearing(); // call into your ContentView
+}
+
     // -----------------------------
     // INIT
     // -----------------------------
