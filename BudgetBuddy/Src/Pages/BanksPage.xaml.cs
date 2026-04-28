@@ -8,55 +8,32 @@ namespace BudgetBuddy;
 
 public partial class BanksPage : CContentView, INotifyPropertyChanged
 {
-    private string _plaidToken;
-    private bool _plaidReady = false;
-
+    private string plaidToken;
+    private bool webView_Loaded;
     public BanksPage()
     {
         InitializeComponent();
 
 
-        BindingContext = this;
-
         XWebView.Navigating += XWebView_Navigating;
 
-        _ = InitAsync();
-    }
+        LoadBanksAsync();
+        BindingContext = this;
 
-    public override void OnAppearing()
-    {
-        IsWebViewOpen = false;
-         LoadBanksAsync();
-
-    }
-
-    // -----------------------------
-    // INIT
-    // -----------------------------
-    private async Task InitAsync()
-    {
-        try
-        {
-            await LoadBanksAsync();
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine("Init error: " + ex);
-        }
     }
 
     // -----------------------------
     // BANKS
     // -----------------------------
-    private ObservableCollection<BankConnection> _banks = new();
+    private ObservableCollection<BankConnection> banks = new();
 
     public ObservableCollection<BankConnection> Banks
     {
-        get => _banks;
+        get => banks;
         set
         {
-            if (_banks == value) return;
-            _banks = value;
+            if (banks == value) return;
+            banks = value;
             OnPropertyChanged();
         }
     }
@@ -77,21 +54,14 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
         }
     }
 
-    // -----------------------------
-    // WEBVIEW STATE
-    // -----------------------------
-    private bool _isWebViewOpen;
 
-    public bool IsWebViewOpen
+    public async override void OnAppearing()
     {
-        get => _isWebViewOpen;
-        set
+        if (webView_Loaded)
         {
-            if (_isWebViewOpen == value) return;
-            _isWebViewOpen = value;
-            OnPropertyChanged();
-            OnIsWebViewOpenChanged(value);
+            ShowWebView(false);
         }
+        LoadBanksAsync();
     }
 
     // -----------------------------
@@ -99,53 +69,29 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
     // -----------------------------
     private async void Add_Clicked(object sender, EventArgs e)
     {
-        try
-        {
-
-            _plaidToken = await ApiCommunicators.Plaid.CreateLinkTokenAsync();
-            _plaidReady = true;
-
-            XWebView.Source = ApiCommunicators.BaseUrl + "/api/plaid.html" ;
-                        IsWebViewOpen = true;
-
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine("Add_Clicked error: " + ex);
-            IsWebViewOpen = false;
-        }
+        ShowWebView(true);
     }
 
-
-    // -----------------------------
-    // CALLBACK HANDLER
-    // -----------------------------
-    private async void XWebView_Navigating(object sender, WebNavigatingEventArgs e)
+    async Task<bool> ExitPlaid(WebNavigatingEventArgs e)
     {
-        if (string.IsNullOrEmpty(e.Url))
-            return;
-
-        // 🔥 NEW: JS is ready → start Plaid here
-        if (e.Url.StartsWith("maui://plaid-ready"))
+        if (!e.Url.StartsWith("maui://plaid-exit"))
         {
-            e.Cancel = true;
-
-            if (_plaidReady && !string.IsNullOrEmpty(_plaidToken))
-            {
-                var safeToken = _plaidToken.Replace("'", "\\'");
-
-                await XWebView.EvaluateJavaScriptAsync(
-                    $"startPlaid('{safeToken}')"
-                );
-            }
-
-            return;
+            return false;
         }
 
-        // existing success/exit logic
-        if (!e.Url.StartsWith("maui://plaid-success") &&
-            !e.Url.StartsWith("maui://plaid-exit"))
-            return;
+        e.Cancel = true;
+
+        ShowWebView(false);
+        Debug.WriteLine("ExitedPlaid");
+        return true;
+    }
+
+    async Task<bool> SuccessPlaid(WebNavigatingEventArgs e)
+    {
+        if (!e.Url.StartsWith("maui://plaid-success")) 
+        {
+            return false;
+        }
 
         e.Cancel = true;
 
@@ -172,36 +118,89 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
                         await ApiCommunicators.Plaid.ExchangePublicTokenAsync(publicToken);
 
                         await LoadBanksAsync();
+                        Debug.WriteLine("SuccessPlaid");
+
+                        return true;
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine("Plaid callback error: " + ex);
+            Debug.WriteLine(ex.ToString());
         }
+        return false;
 
-        IsWebViewOpen = false;
+    }
+
+    async Task<bool> InitPlaid(WebNavigatingEventArgs e)
+    {
+        if (e.Url.StartsWith("maui://plaid-ready"))
+        {
+            e.Cancel = true;
+
+            if (!string.IsNullOrEmpty(plaidToken))
+            {
+                var safeToken = plaidToken.Replace("'", "\\'");
+
+                try
+                {
+                    await XWebView.EvaluateJavaScriptAsync(
+                        $"startPlaid('{safeToken}')"
+                    );
+                    Debug.WriteLine("PlaidInit");
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.ToString());
+                }
+            }
+
+        }
+        return false;
+    }
+
+    // -----------------------------
+    // CALLBACK HANDLER
+    // -----------------------------
+    private async void XWebView_Navigating(object sender, WebNavigatingEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Url))
+            return;
+
+        bool initPlaid = await InitPlaid(e);
+
+        bool exitPlaid = await ExitPlaid(e);
+
+        bool successPaid = await SuccessPlaid(e);
+
+        //ShowWebView(!exitPlaid || !successPaid);
     }
 
     // -----------------------------
     // RESET WEBVIEW
     // -----------------------------
-    private void OnIsWebViewOpenChanged(bool isOpen)
+    private async void ShowWebView(bool open)
     {
-        if (!isOpen)
+        if (open)
         {
-            _plaidReady = false;
-            _plaidToken = null;
+            WebViewBorder.IsVisible = true;
+            plaidToken = await ApiCommunicators.Plaid.CreateLinkTokenAsync();
+            XWebView.Source = ApiCommunicators.BaseUrl + "/api/plaid.html";
+        }
+        else
+        {
             XWebView.Source = "about:blank";
+            await Task.Delay(1000);
+            plaidToken = null;
+            WebViewBorder.IsVisible = false;
+
         }
     }
 
-    // -----------------------------
-    // PROPERTY CHANGED
-    // -----------------------------
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected void OnPropertyChanged([CallerMemberName] string name = null)
-        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    private void XWebView_Loaded(object sender, EventArgs e)
+    {
+        webView_Loaded = true;
+    }
 }
