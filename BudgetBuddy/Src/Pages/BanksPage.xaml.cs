@@ -14,12 +14,13 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
     {
         InitializeComponent();
 
+        // Pre-warm assembly to avoid JIT lag on first Plaid callback
+        _ = System.Web.HttpUtility.ParseQueryString("");
 
         XWebView.Navigating += XWebView_Navigating;
-
+        XWebView.Loaded += XWebView_Loaded;
         LoadBanksAsync();
         BindingContext = this;
-
     }
 
     // -----------------------------
@@ -69,7 +70,7 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
     // -----------------------------
     private async void Add_Clicked(object sender, EventArgs e)
     {
-        ShowWebView(true);
+        await ShowWebView(true);
     }
 
     async Task<bool> ExitPlaid(WebNavigatingEventArgs e)
@@ -96,25 +97,29 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
         try
         {
             var uri = new Uri(e.Url);
-            var data = System.Web.HttpUtility.ParseQueryString(uri.Query).Get("data");
+            var data = System.Web.HttpUtility
+                .ParseQueryString(uri.Query).Get("data");
 
-            if (!string.IsNullOrEmpty(data))
+            if (string.IsNullOrEmpty(data)) return false;
+
+            var json = Uri.UnescapeDataString(data);
+            using var doc = JsonDocument.Parse(json);
+
+            if (doc.RootElement.TryGetProperty("public_token", out var token))
             {
-                var json = Uri.UnescapeDataString(data);
-                using var doc = JsonDocument.Parse(json);
+                var publicToken = token.GetString();
 
-                if (doc.RootElement.TryGetProperty("public_token", out var token))
-                {
-                    await ApiCommunicators.Plaid.ExchangePublicTokenAsync(token.GetString());
-                    ShowWebView(false); // <-- close after success
-                    await LoadBanksAsync();
-                    return true;
-                }
+                // Close UI immediately, then do network work
+                await ShowWebView(false);
+                await ApiCommunicators.Plaid.ExchangePublicTokenAsync(publicToken);
+                await LoadBanksAsync();
+                return true;
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex.ToString());
+            Debug.WriteLine("SuccessPlaid error: " + ex);
+            await ShowWebView(false); // close even on failure
         }
         return false;
     }
@@ -162,28 +167,32 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
     // -----------------------------
     // RESET WEBVIEW
     // -----------------------------
-    private async void ShowWebView(bool open)
+    private async Task ShowWebView(bool open)  // Task, not void
     {
         if (open)
         {
-            // Fetch token FIRST, then load the page
-            plaidToken = await ApiCommunicators.Plaid.CreateLinkTokenAsync();
+            // Fetch token off main thread
+            plaidToken = await Task.Run(() =>
+                ApiCommunicators.Plaid.CreateLinkTokenAsync());
 
-            if (string.IsNullOrEmpty(plaidToken))
+            if (string.IsNullOrEmpty(plaidToken)) return;
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                Debug.WriteLine("Failed to get Plaid token");
-                return;
-            }
-
-            WebViewBorder.IsVisible = true;
-            XWebView.Source = ApiCommunicators.BaseUrl + "/api/plaid.html";
+                WebViewBorder.IsVisible = true;
+                XWebView.Source = ApiCommunicators.BaseUrl + "/api/plaid.html";
+            });
         }
         else
         {
-            XWebView.Source = "about:blank";
-            await Task.Delay(1000);
+            await MainThread.InvokeOnMainThreadAsync(() =>
+                XWebView.Source = "about:blank");
+
+            await Task.Delay(500); // reduced from 1000ms
             plaidToken = null;
-            WebViewBorder.IsVisible = false;
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+                WebViewBorder.IsVisible = false);
         }
     }
 
