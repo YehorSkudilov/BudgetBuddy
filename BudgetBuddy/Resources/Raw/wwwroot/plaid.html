@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8" />
     <title>Plaid</title>
+    <script src="_framework/hybridwebview.js"></script>
     <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 </head>
 <body>
     <script>
-        // HybridWebView message bridge
         function sendToMAUI(type, payload) {
             window.HybridWebView.SendRawMessage(JSON.stringify({ type, ...payload }));
         }
@@ -16,17 +16,14 @@
             sendToMAUI("exit", { error: msg, line, col });
         };
 
-        // Called by MAUI after page signals ready
         function startPlaid(linkToken) {
             try {
                 if (!window.Plaid) throw new Error("Plaid SDK not loaded");
 
                 Plaid.create({
                     token: linkToken,
-                    onSuccess: (public_token, metadata) =>
-                        sendToMAUI("success", { public_token }),
-                    onExit: (err, metadata) =>
-                        sendToMAUI("exit", { err, metadata })
+                    onSuccess: (public_token) => sendToMAUI("success", { public_token }),
+                    onExit: (err, metadata) => sendToMAUI("exit", { err, metadata })
                 }).open();
 
             } catch (ex) {
@@ -34,13 +31,16 @@
             }
         }
 
-        // Signal MAUI as soon as Plaid SDK is ready
+        // Poll until Plaid SDK is ready, then tell C# we're good
         window.addEventListener("load", function () {
+            let attempts = 0;
             const t = setInterval(() => {
-                if (window.Plaid?.create) {
+                attempts++;
+                if (window.HybridWebView && window.Plaid?.create) {
                     clearInterval(t);
-                    sendToMAUI("ready", {});
+                    window.HybridWebView.SendRawMessage(JSON.stringify({ type: "ready" }));
                 }
+                if (attempts > 100) clearInterval(t); // 5s timeout
             }, 50);
         });
     </script>

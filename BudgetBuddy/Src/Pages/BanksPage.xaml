@@ -37,14 +37,15 @@
             IconHeightRequest="30"
             IconPadding="8" />
 
-        <Border x:Name="WebViewBorder" IsVisible="False" StrokeThickness="0" Margin="0,0,0,40" Grid.RowSpan="4">
+        <Border x:Name="WebViewBorder"
+                IsVisible="False"
+                StrokeThickness="0"
+                Margin="0,0,0,40"
+                Grid.RowSpan="4">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="20"/>
             </Border.StrokeShape>
-
-                <WebView Loaded="XWebView_Loaded" x:Name="XWebView"/>
+            <HybridWebView x:Name="XWebView" />
         </Border>
-
-
     </Grid>
 </local:CContentView>

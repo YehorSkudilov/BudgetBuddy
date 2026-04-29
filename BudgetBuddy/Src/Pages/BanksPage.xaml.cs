@@ -8,36 +8,29 @@ namespace BudgetBuddy;
 
 public partial class BanksPage : CContentView, INotifyPropertyChanged
 {
-    private string plaidToken;
-    private bool webView_Loaded;
+    private string? _plaidToken;
+    private bool _plaidReady;
 
     public BanksPage()
     {
         InitializeComponent();
-
-        // Pre-warm assembly to avoid JIT lag on first Plaid callback
-        _ = System.Web.HttpUtility.ParseQueryString("");
-
-        XWebView.Navigating += XWebView_Navigating;
-        XWebView.Loaded += XWebView_Loaded;
-        LoadBanksAsync();
         BindingContext = this;
+
+        // wwwroot in Resources/Raw is the default — HybridRoot not needed
+        XWebView.DefaultFile = "plaid.html";
+        XWebView.RawMessageReceived += OnRawMessageReceived;
+
+        LoadBanksAsync();
     }
 
-    // -----------------------------
+    // ---------------------------------------------------------------
     // BANKS
-    // -----------------------------
-    private ObservableCollection<BankConnection> banks = new();
-
+    // ---------------------------------------------------------------
+    private ObservableCollection<BankConnection> _banks = new();
     public ObservableCollection<BankConnection> Banks
     {
-        get => banks;
-        set
-        {
-            if (banks == value) return;
-            banks = value;
-            OnPropertyChanged();
-        }
+        get => _banks;
+        set { if (_banks == value) return; _banks = value; OnPropertyChanged(); }
     }
 
     private async Task LoadBanksAsync()
@@ -45,210 +38,177 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
         try
         {
             var result = await ApiCommunicators.Finance.GetAllBanksAsync();
-
             Banks = result != null
                 ? new ObservableCollection<BankConnection>(result)
                 : new ObservableCollection<BankConnection>();
         }
-        catch (Exception ex)
-        {
-            Debug.WriteLine("LoadBanks error: " + ex);
-        }
+        catch (Exception ex) { Debug.WriteLine("LoadBanks error: " + ex); }
     }
 
-    public async override void OnAppearing()
+    public override async void OnAppearing()
     {
-        if (webView_Loaded)
-        {
-            await ShowWebView(false);
-        }
+        if (WebViewBorder.IsVisible)
+            await CloseWebView();
+
         await LoadBanksAsync();
     }
 
-    // -----------------------------
-    // PLAID START
-    // -----------------------------
-    private async void Add_Clicked(object sender, EventArgs e)
+    // ---------------------------------------------------------------
+    // OPEN / CLOSE
+    // ---------------------------------------------------------------
+    private async void Add_Clicked(object sender, EventArgs e) => await OpenWebView();
+
+    private async Task OpenWebView()
     {
-        await ShowWebView(true);
+        // Fetch token in parallel with showing the webview
+        var tokenTask = Task.Run(() => ApiCommunicators.Plaid.CreateLinkTokenAsync());
+
+        await MainThread.InvokeOnMainThreadAsync(() =>
+            WebViewBorder.IsVisible = true);
+
+        _plaidToken = await tokenTask;
+
+        if (string.IsNullOrEmpty(_plaidToken))
+        {
+            Debug.WriteLine("Failed to get Plaid token");
+            await CloseWebView();
+            return;
+        }
+
+        // If JS already fired "ready" before token was fetched, inject now
+        if (_plaidReady)
+            await InjectToken();
     }
 
-    async Task<bool> ExitPlaid(WebNavigatingEventArgs e)
+    private async Task CloseWebView()
     {
-        if (!e.Url.StartsWith("maui://plaid-exit"))
-            return false;
+        _plaidToken = null;
+        _plaidReady = false;
 
-        e.Cancel = true;
+        await MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            try
+            {
+                // Reload so next open gets a clean page with fresh Plaid SDK state
+                await XWebView.EvaluateJavaScriptAsync("window.location.reload()");
+            }
+            catch { /* ignore if page is already blank */ }
 
-        await ShowWebView(false);
-        Debug.WriteLine("ExitedPlaid");
-        return true;
+            WebViewBorder.IsVisible = false;
+        });
     }
 
-    async Task<bool> SuccessPlaid(WebNavigatingEventArgs e)
+    // ---------------------------------------------------------------
+    // MESSAGE BRIDGE
+    // ---------------------------------------------------------------
+    private async void OnRawMessageReceived(object? sender, HybridWebViewRawMessageReceivedEventArgs e)
     {
-        if (!e.Url.StartsWith("maui://plaid-success"))
-            return false;
+        if (string.IsNullOrEmpty(e.Message)) return;
 
-        e.Cancel = true;
+        Debug.WriteLine($"[HybridWebView] Message: {e.Message}");
 
         try
         {
-            var uri = new Uri(e.Url);
-            var data = System.Web.HttpUtility
-                .ParseQueryString(uri.Query).Get("data");
+            using var doc = JsonDocument.Parse(e.Message);
+            var root = doc.RootElement;
+            var type = root.GetProperty("type").GetString();
 
-            if (string.IsNullOrEmpty(data)) return false;
-
-            var json = Uri.UnescapeDataString(data);
-            using var doc = JsonDocument.Parse(json);
-
-            if (doc.RootElement.TryGetProperty("public_token", out var token))
+            switch (type)
             {
-                var publicToken = token.GetString();
+                case "ready":
+                    await HandlePlaidReady();
+                    break;
 
-                // Close UI immediately, then do network work
-                await ShowWebView(false);
-                await ApiCommunicators.Plaid.ExchangePublicTokenAsync(publicToken);
-                await LoadBanksAsync();
-                return true;
+                case "success":
+                    await HandlePlaidSuccess(root);
+                    break;
+
+                case "exit":
+                    await HandlePlaidExit(root);
+                    break;
+
+                default:
+                    Debug.WriteLine($"Unknown message type: {type}");
+                    break;
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine("SuccessPlaid error: " + ex);
-            await ShowWebView(false);
+            Debug.WriteLine("OnRawMessageReceived error: " + ex);
+            await CloseWebView();
         }
-        return false;
     }
 
-    async Task<bool> InitPlaid(WebNavigatingEventArgs e)
+    private async Task HandlePlaidReady()
     {
-        if (!e.Url.StartsWith("maui://plaid-ready"))
-            return false;
+        _plaidReady = true;
 
-        e.Cancel = true;
-        await InjectPlaidToken();
-        return true;
-    }
-
-    // -----------------------------
-    // PLAID INJECTION (with retry)
-    // -----------------------------
-    private async Task InjectPlaidToken()
-    {
-        if (string.IsNullOrEmpty(plaidToken)) return;
-
-        var safeToken = plaidToken.Replace("'", "\\'");
-
-        for (int i = 0; i < 5; i++)
+        // Token might not be fetched yet if network was slow — wait for it
+        if (string.IsNullOrEmpty(_plaidToken))
         {
-            try
+            Debug.WriteLine("Ready received — waiting for token");
+
+            for (int i = 0; i < 40; i++) // up to 4 seconds
             {
-                var result = await MainThread.InvokeOnMainThreadAsync(() =>
-                    XWebView.EvaluateJavaScriptAsync(
-                        $"typeof startPlaid === 'function' ? startPlaid('{safeToken}') : 'not_ready'"
-                    ));
-
-                if (result != "not_ready")
-                {
-                    Debug.WriteLine("PlaidInit success");
-                    return;
-                }
-
-                Debug.WriteLine($"PlaidInit retry {i + 1}");
+                await Task.Delay(100);
+                if (!string.IsNullOrEmpty(_plaidToken)) break;
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"PlaidInit attempt {i + 1} failed: {ex.Message}");
-            }
-
-            await Task.Delay(300);
         }
 
-        Debug.WriteLine("PlaidInit failed after all retries");
-    }
-
-    // -----------------------------
-    // CALLBACK HANDLER
-    // -----------------------------
-    private async void XWebView_Navigating(object sender, WebNavigatingEventArgs e)
-    {
-        Debug.WriteLine($"Navigating: {e.Url}");
-
-        if (string.IsNullOrEmpty(e.Url)) return;
-
-        if (await InitPlaid(e)) return;
-        if (await ExitPlaid(e)) return;
-        if (await SuccessPlaid(e)) return;
-    }
-
-    // -----------------------------
-    // SHOW / HIDE WEBVIEW
-    // -----------------------------
-    private async Task ShowWebView(bool open)
-    {
-        if (open)
+        if (string.IsNullOrEmpty(_plaidToken))
         {
-            // Fetch token before loading page so it's ready when plaid-ready fires
-            plaidToken = await Task.Run(() =>
-                ApiCommunicators.Plaid.CreateLinkTokenAsync());
-
-            if (string.IsNullOrEmpty(plaidToken))
-            {
-                Debug.WriteLine("Failed to get Plaid token");
-                return;
-            }
-
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                WebViewBorder.IsVisible = true;
-                XWebView.Source = ApiCommunicators.BaseUrl + "/api/plaid.html";
-            });
-
-            // Fallback: if plaid-ready signal was missed on first launch, poll and inject
-            _ = Task.Run(async () =>
-            {
-                await Task.Delay(2000); // give the page time to fully load
-
-                if (string.IsNullOrEmpty(plaidToken)) return; // already handled via signal
-
-                try
-                {
-                    var isReady = await MainThread.InvokeOnMainThreadAsync(() =>
-                        XWebView.EvaluateJavaScriptAsync("window._plaidReady === true ? 'yes' : 'no'"));
-
-                    if (isReady == "yes")
-                    {
-                        Debug.WriteLine("Fallback injection triggered");
-                        await InjectPlaidToken();
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Fallback: page not ready after 2s");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Fallback injection error: " + ex.Message);
-                }
-            });
+            Debug.WriteLine("Token never arrived — closing");
+            await CloseWebView();
+            return;
         }
-        else
+
+        await InjectToken();
+    }
+
+    private async Task InjectToken()
+    {
+        // Escape token for safe JS string injection
+        var safeToken = JsonSerializer.Serialize(_plaidToken); // gives "token-with-quotes-safe"
+
+        try
         {
             await MainThread.InvokeOnMainThreadAsync(() =>
-                XWebView.Source = "about:blank");
+                XWebView.EvaluateJavaScriptAsync($"startPlaid({safeToken})"));
 
-            await Task.Delay(500);
-            plaidToken = null;
-
-            await MainThread.InvokeOnMainThreadAsync(() =>
-                WebViewBorder.IsVisible = false);
+            Debug.WriteLine("Plaid started successfully");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("InjectToken error: " + ex);
+            await CloseWebView();
         }
     }
 
-    private void XWebView_Loaded(object sender, EventArgs e)
+    private async Task HandlePlaidSuccess(JsonElement root)
     {
-        webView_Loaded = true;
+        var publicToken = root.TryGetProperty("public_token", out var t) ? t.GetString() : null;
+
+        await CloseWebView();
+
+        if (!string.IsNullOrEmpty(publicToken))
+        {
+            await ApiCommunicators.Plaid.ExchangePublicTokenAsync(publicToken);
+            await LoadBanksAsync();
+        }
     }
+
+    private async Task HandlePlaidExit(JsonElement root)
+    {
+        if (root.TryGetProperty("error", out var err) && err.ValueKind != JsonValueKind.Null)
+            Debug.WriteLine("Plaid exit with error: " + err.GetString());
+
+        await CloseWebView();
+    }
+
+    // ---------------------------------------------------------------
+    // INotifyPropertyChanged
+    // ---------------------------------------------------------------
+    public new event PropertyChangedEventHandler? PropertyChanged;
+    protected void OnPropertyChanged([CallerMemberName] string? name = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }
