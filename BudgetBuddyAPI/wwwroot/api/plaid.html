@@ -9,6 +9,7 @@
     <script>
         // -----------------------------
         // SIGNAL MAUI (without navigating away)
+        // Uses hidden iframe so the page stays alive
         // -----------------------------
         function signalMAUI(url) {
             const iframe = document.createElement('iframe');
@@ -24,7 +25,11 @@
         window.onerror = function (msg, url, line, col, error) {
             try {
                 signalMAUI("maui://plaid-exit?data=" +
-                    encodeURIComponent(JSON.stringify({ error: msg, line: line, col: col })));
+                    encodeURIComponent(JSON.stringify({
+                        error: msg,
+                        line: line,
+                        col: col
+                    })));
             } catch { }
         };
 
@@ -42,29 +47,40 @@
 
                     onSuccess: function (public_token, metadata) {
                         signalMAUI("maui://plaid-success?data=" +
-                            encodeURIComponent(JSON.stringify({ public_token: public_token })));
+                            encodeURIComponent(JSON.stringify({
+                                public_token: public_token
+                            })));
                     },
 
                     onExit: function (err, metadata) {
                         signalMAUI("maui://plaid-exit?data=" +
-                            encodeURIComponent(JSON.stringify({ err: err, metadata: metadata })));
+                            encodeURIComponent(JSON.stringify({
+                                err: err,
+                                metadata: metadata
+                            })));
                     }
                 });
 
                 handler.open();
             } catch (ex) {
                 signalMAUI("maui://plaid-exit?data=" +
-                    encodeURIComponent(JSON.stringify({ error: ex.message })));
+                    encodeURIComponent(JSON.stringify({
+                        error: ex.message
+                    })));
             }
         }
 
         // -----------------------------
         // SIGNAL MAUI WHEN READY
+        // Exposes window._plaidReady for fallback polling from C#
         // -----------------------------
+        window._plaidReady = false;
+
         window.addEventListener("load", function () {
             const waitForPlaid = setInterval(() => {
                 if (window.Plaid && window.Plaid.create) {
                     clearInterval(waitForPlaid);
+                    window._plaidReady = true;
                     signalMAUI("maui://plaid-ready");
                 }
             }, 50);
