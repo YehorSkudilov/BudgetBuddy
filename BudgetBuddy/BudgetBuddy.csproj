@@ -73,6 +73,9 @@
     <MauiXaml Update="Src\CAppShell.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Src\Pages\LoadingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Src\Pages\BanksPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
@@ -126,6 +129,9 @@
     </MauiXaml>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Src\Pages\LoadingPage.xaml.cs">
+      <DependentUpon>LoadingPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Src\Pages\TransactionsPage.xaml.cs">
       <DependentUpon>TransactionsPage.xaml</DependentUpon>
     </Compile>

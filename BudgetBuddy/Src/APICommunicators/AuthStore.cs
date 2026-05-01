@@ -4,9 +4,8 @@ public static class AuthStore
 {
     private const string TokenKey = "auth_token";
 
-    public static string? Token { get; set; }
+    public static string? Token { get; private set; }
 
-    // 🔥 App-level logout event (UI listens to this)
     public static event Action? AuthChanged;
 
     public static async Task InitializeAsync()
@@ -20,9 +19,11 @@ public static class AuthStore
 #endif
     }
 
-    public static async Task SetTokenAsync(string token, bool persist)
+    public static async Task SetTokenAsync(string token, bool persist = true)
     {
         Token = token;
+
+        
 
         if (!persist)
             return;
@@ -34,7 +35,6 @@ public static class AuthStore
 #endif
     }
 
-    // ✅ CLEAN LOGOUT METHOD
     public static void Logout()
     {
         Token = null;
@@ -45,7 +45,7 @@ public static class AuthStore
         DeleteFile();
 #endif
 
-        AuthChanged?.Invoke(); // notify UI
+        AuthChanged?.Invoke();
     }
 
 #if WINDOWS
