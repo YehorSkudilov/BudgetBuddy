@@ -94,6 +94,9 @@
     <MauiXaml Update="Src\Pages\TransactionsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Src\Views\AuthView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Src\Views\BankListView\BankListView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>

@@ -1,83 +1,62 @@
-﻿using System.Diagnostics;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 
 namespace BudgetBuddy;
 
-public class Plaid
+public class Plaid : ApiClientBase
 {
-    private readonly HttpClient _client;
+    private string Endpoint(string path)
+        => BuildUrl($"/api/plaid{path}");
 
-    private string Endpoint(string path) => $"{ApiCommunicators.BaseUrl}/api/plaid{path}";
-
-    public Plaid()
-    {
-        _client = new HttpClient();
-    }
-    // -----------------------------
-    // CREATE LINK TOKEN
-    // -----------------------------
     public async Task<string?> CreateLinkTokenAsync()
     {
-        var res = await _client.PostAsync(Endpoint("/CreateLinkToken"), null);
+        var res = await SendAsync(new HttpRequestMessage(
+            HttpMethod.Post,
+            Endpoint("/CreateLinkToken")
+        ));
 
-        res.EnsureSuccessStatusCode();
+        var json = await ReadJsonAsync<JsonElement>(res);
 
-        var json = await res.Content.ReadAsStringAsync();
-
-        using var doc = JsonDocument.Parse(json);
-
-        return doc.RootElement.GetProperty("link_token").GetString();
+        return json.ValueKind == JsonValueKind.Object &&
+               json.TryGetProperty("link_token", out var token)
+            ? token.GetString()
+            : null;
     }
 
-    // -----------------------------
-    // EXCHANGE PUBLIC TOKEN
-    // -----------------------------
-    public async Task<string> ExchangePublicTokenAsync(string publicToken)
+    public async Task<string?> ExchangePublicTokenAsync(string publicToken)
     {
-        var payload = new
+        var request = new HttpRequestMessage(
+            HttpMethod.Post,
+            Endpoint("/Exchange")
+        )
         {
-            public_token = publicToken
+            Content = new StringContent(
+                JsonSerializer.Serialize(new { public_token = publicToken }),
+                Encoding.UTF8,
+                "application/json"
+            )
         };
 
-        var jsonContent = new StringContent(
-            JsonSerializer.Serialize(payload),
-            Encoding.UTF8,
-            "application/json"
-        );
-
-        var res = await _client.PostAsync(
-            Endpoint("/Exchange"),
-            jsonContent
-        );
-
-        res.EnsureSuccessStatusCode();
-
+        var res = await SendAsync(request);
         return await res.Content.ReadAsStringAsync();
     }
 
     public async Task<string?> SyncAllBanksAsync()
     {
-        Debug.WriteLine("Sync");
-        var res = await _client.GetAsync(
+        var res = await SendAsync(new HttpRequestMessage(
+            HttpMethod.Get,
             Endpoint("/SyncAllBanks")
-        );
-
-        res.EnsureSuccessStatusCode();
+        ));
 
         return await res.Content.ReadAsStringAsync();
     }
 
-    // -----------------------------
-    // REMOVE BANK
-    // -----------------------------
-    public async Task<string> RemoveBankAsync(int bankId)
+    public async Task<string?> RemoveBankAsync(int bankId)
     {
-        var res = await _client.DeleteAsync(
+        var res = await SendAsync(new HttpRequestMessage(
+            HttpMethod.Delete,
             Endpoint($"/RemoveBank/{bankId}")
-        );
-
-        res.EnsureSuccessStatusCode();
+        ));
 
         return await res.Content.ReadAsStringAsync();
     }

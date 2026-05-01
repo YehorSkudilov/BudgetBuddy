@@ -60,6 +60,9 @@ public partial class TransactionsPage : CContentView
     {
         var transactions = await ApiCommunicators.Finance.GetAllTransactionsAsync();
 
+        if (transactions == null)
+            transactions = new List<Transaction>(); // 🔥 prevent crash
+
         TransactionsGroups = new ObservableCollection<TransactionGroup>(
             transactions
                 .GroupBy(t => t.Date.Date)

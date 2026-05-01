@@ -47,12 +47,12 @@
 
 
                             <VerticalStackLayout>
-                                <Label
+                                <!--<Label
                                     Grid.Row="1"
                                     FontSize="11"
                                     Opacity="0.5"
                                     Text="{Binding DateTime, StringFormat='{0:hh:mm tt}'}"
-                                    VerticalOptions="Center" />
+                                    VerticalOptions="Center" />-->
                                 <Grid ColumnSpacing="10" ColumnDefinitions="*, auto">
                                     <Label
                                         FontAttributes="Bold"
@@ -71,7 +71,7 @@
                                 <Label
                                     FontSize="12"
                                     Opacity="0.6"
-                                    Text="{Binding Category.Primary}" />
+                                    Text="{Binding Personal_Finance_Category.Primary}" />
                             </VerticalStackLayout>
 
                     </Grid>

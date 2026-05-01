@@ -67,28 +67,26 @@
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
 
 
-                                <Border
-                            Background="#15ffffff"
-                            Stroke="#33ffffff">
+                                <Border Background="#15ffffff" Stroke="#33ffffff">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="12" />
                                     </Border.StrokeShape>
                                     <VerticalStackLayout Padding="6,6,6,0" Spacing="-10">
                                         <Label
-FontSize="10"
-HorizontalOptions="Center"
-Text="Max"
-TextColor="#88ffffff" />
+                                            FontSize="10"
+                                            HorizontalOptions="Center"
+                                            Text="Max"
+                                            TextColor="#88ffffff" />
 
                                         <Entry
-                                        FontSize="14"
-                                        HorizontalTextAlignment="Center"
-                                        Keyboard="Numeric"
-                                        Placeholder="Set Goal"
-                                        PlaceholderColor="#88ffffff"
-                                        Text="{Binding GoalAmount}"
-                                        TextColor="White" />
-                                        
+                                            FontSize="14"
+                                            HorizontalTextAlignment="Center"
+                                            Keyboard="Numeric"
+                                            Placeholder="Set Goal"
+                                            PlaceholderColor="#88ffffff"
+                                            Text="{Binding GoalAmount}"
+                                            TextColor="White" />
+
                                     </VerticalStackLayout>
                                 </Border>
 
@@ -101,15 +99,15 @@ TextColor="#88ffffff" />
                                     </Border.StrokeShape>
                                     <VerticalStackLayout Padding="6" Spacing="2">
                                         <Label
-        FontSize="10"
-        HorizontalOptions="Center"
-        Text="Spent"
-        TextColor="#88ffffff" />
+                                            FontSize="10"
+                                            HorizontalOptions="Center"
+                                            Text="Spent"
+                                            TextColor="#88ffffff" />
                                         <Label
-                      FontSize="14"
-                      HorizontalOptions="Center"
-                      Text="{Binding CurrentAmount}"
-                      TextColor="White" />
+                                            FontSize="14"
+                                            HorizontalOptions="Center"
+                                            Text="{Binding CurrentAmount}"
+                                            TextColor="White" />
 
                                     </VerticalStackLayout>
                                 </Border>

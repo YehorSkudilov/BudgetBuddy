@@ -21,6 +21,12 @@
                     IconHeightRequest="30"
                     IconWidthRequest="30" />
 
+                <AppSkeleton:CButton
+                    Clicked="OnLogoutClicked"
+                    HeightRequest="60"
+                    Icon="logout"
+                    IconFontFamily="OutlinedIcons" />
+
 
                 <AppSkeleton:AcrylicView
                     BorderColor="#40ffffff"

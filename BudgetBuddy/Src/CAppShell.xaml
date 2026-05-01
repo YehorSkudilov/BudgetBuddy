@@ -13,9 +13,31 @@
         </LinearGradientBrush>
     </ContentPage.Background>
 
-    <Grid Padding="10" x:Name="MainGrid" RowDefinitions="auto, *, 25.5, 25.5">
-        <local:TopBar x:Name="TopBar" SettingsAction="{Binding SettingsAction}" NotificationsAction="{Binding NotificationsAction}" Margin="0,0,0,10" PageName="{Binding PageName}"/>
-        <AppSkeleton:CView Grid.Row="1" Grid.RowSpan="2" x:Name="View"/>
-        <AppSkeleton:CNavBar x:Name="NavBar" Grid.Row="2" Grid.RowSpan="2" FontFamily="OutlinedIcons" SelectedFontFamily="RegularIcons" CNavIconItems="{Binding CNavIconItems}"/>
+    <!-- ROOT -->
+    <Grid>
+
+        <!-- MAIN APP -->
+        <Grid Padding="10" x:Name="MainGrid" RowDefinitions="auto, *, 25.5, 25.5">
+
+            <local:TopBar x:Name="TopBar"
+                          SettingsAction="{Binding SettingsAction}"
+                          NotificationsAction="{Binding NotificationsAction}"
+                          Margin="0,0,0,10"
+                          PageName="{Binding PageName}"/>
+
+            <AppSkeleton:CView Grid.Row="1" Grid.RowSpan="2" x:Name="View"/>
+
+            <AppSkeleton:CNavBar x:Name="NavBar"
+                                 Grid.Row="2"
+                                 Grid.RowSpan="2"
+                                 FontFamily="OutlinedIcons"
+                                 SelectedFontFamily="RegularIcons"
+                                 CNavIconItems="{Binding CNavIconItems}"/>
+        </Grid>
+
+        <!-- 🔐 AUTH OVERLAY -->
+        <Grid x:Name="AuthContainer"
+      IsVisible="False"/>
+
     </Grid>
 </ContentPage>

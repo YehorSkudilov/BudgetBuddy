@@ -10,8 +10,7 @@ public static class ApiCommunicators
 
 
 
-    public static Plaid Plaid { get; private set; } = new Plaid();
-
-    public static Finance Finance { get; private set; } = new Finance();
-
+    public static Plaid Plaid { get; } = new Plaid();
+    public static Finance Finance { get; } = new Finance();
+    public static User User { get; } = new User();
 }

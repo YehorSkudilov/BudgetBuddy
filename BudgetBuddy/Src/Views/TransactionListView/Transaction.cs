@@ -21,7 +21,7 @@ public class Transaction
     public string? Website { get; set; }
 
     // FIX: category is an OBJECT, not string
-    public TransactionCategory? Category { get; set; }
+    public TransactionCategory? Personal_Finance_Category { get; set; }
 
     public Account? Account { get; set; }
     public BankConnection? Bank { get; set; }
