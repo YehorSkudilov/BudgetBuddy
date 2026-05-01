@@ -8,6 +8,7 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options) { }
 
+    public DbSet<User> Users => Set<User>();
     public DbSet<BankConnection> BankConnections => Set<BankConnection>();
     public DbSet<BankAccount> BankAccounts => Set<BankAccount>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
@@ -16,6 +17,20 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // -----------------------------
+        // USER -> BANK CONNECTIONS
+        // -----------------------------
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.email)
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.bank_connections)
+            .WithOne(c => c.user)
+            .HasForeignKey(c => c.user_id)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
 
         // -----------------------------
         // INSTITUTION -> BANK CONNECTIONS

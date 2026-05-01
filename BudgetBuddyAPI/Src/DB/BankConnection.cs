@@ -7,6 +7,8 @@ public class BankConnection
     public int id { get; set; }
 
     public Guid user_id { get; set; }
+    public User user { get; set; } = null!;
+
     public string item_id { get; set; } = "";
     public string access_token { get; set; } = "";
 

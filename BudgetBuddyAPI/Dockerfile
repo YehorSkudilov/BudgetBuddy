@@ -2,17 +2,18 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 8080
 
+# ✅ FIX: missing system dependency for PostgreSQL / Kerberos auth
+RUN apt-get update && apt-get install -y \
+    libgssapi-krb5-2 \
+    && rm -rf /var/lib/apt/lists/*
+
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# copy csproj directly
 COPY ["BudgetBuddyAPI.csproj", "."]
-
 RUN dotnet restore "BudgetBuddyAPI.csproj"
 
-# copy everything
 COPY . .
-
 RUN dotnet build "BudgetBuddyAPI.csproj" -c Release -o /app/build
 
 FROM build AS publish

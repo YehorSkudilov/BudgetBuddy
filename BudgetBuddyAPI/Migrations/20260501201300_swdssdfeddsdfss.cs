@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BudgetBuddyAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class swdssdfedsdfsddf : Migration
+    public partial class swdssdfeddsdfss : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,6 +27,21 @@ namespace BudgetBuddyAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Institutions", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    email = table.Column<string>(type: "text", nullable: false),
+                    username = table.Column<string>(type: "text", nullable: false),
+                    password = table.Column<string>(type: "text", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -51,6 +66,12 @@ namespace BudgetBuddyAPI.Migrations
                         principalTable: "Institutions",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BankConnections_Users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "Users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -256,6 +277,12 @@ namespace BudgetBuddyAPI.Migrations
                 table: "Transactions",
                 column: "transaction_id",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_email",
+                table: "Users",
+                column: "email",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -281,6 +308,9 @@ namespace BudgetBuddyAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "Institutions");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace BudgetBuddyAPI;
 
+[Authorize]
 [ApiController]
 [Route("api/plaid")]
-public class PlaidController : ControllerBase
+public class PlaidController : BaseController
 {
     private readonly PlaidClient _plaid;
     private readonly AppDbContext _db;
@@ -22,7 +25,7 @@ public class PlaidController : ControllerBase
     [HttpPost("[action]")]
     public async Task<IActionResult> CreateLinkToken()
     {
-        var token = await _plaid.CreateLinkTokenAsync(Guid.NewGuid().ToString());
+        var token = await _plaid.CreateLinkTokenAsync(UserId.ToString());
         return Ok(new { link_token = token });
     }
 
@@ -32,36 +35,38 @@ public class PlaidController : ControllerBase
     [HttpPost("[action]")]
     public async Task<IActionResult> Exchange([FromBody] ExchangeRequest req)
     {
+        var userId = UserId;
+
         var (accessToken, itemId) = await _plaid.ExchangePublicTokenAsync(req.public_token);
 
-        // Get institution info from item
         var itemRes = await _plaid.PostAsync("/item/get", new { access_token = accessToken });
         var plaidInstitutionId = itemRes.GetProperty("item")
                                         .GetProperty("institution_id")
                                         .GetString()!;
 
-        // Upsert institution
         var institution = await _db.Institutions
             .FirstOrDefaultAsync(i => i.institution_id == plaidInstitutionId);
 
         if (institution == null)
         {
             var instRes = await _plaid.GetInstitutionAsync(plaidInstitutionId);
-            instRes.id = 0; // clear Plaid's id field if any, let EF assign PK
-            institution = instRes;
-            institution.updated_at = DateTime.UtcNow;
-            _db.Institutions.Add(institution);
+            instRes.id = 0;
+            instRes.updated_at = DateTime.UtcNow;
+
+            _db.Institutions.Add(instRes);
             await _db.SaveChangesAsync();
+
+            institution = instRes;
         }
 
-        // Prevent duplicate connections
         var existing = await _db.BankConnections
-            .FirstOrDefaultAsync(x => x.item_id == itemId);
+            .FirstOrDefaultAsync(x => x.item_id == itemId && x.user_id == userId);
 
         if (existing != null)
         {
             existing.access_token = accessToken;
             await _db.SaveChangesAsync();
+
             return Ok(new { message = "Bank already connected, token refreshed", existing.id });
         }
 
@@ -70,7 +75,7 @@ public class PlaidController : ControllerBase
             access_token = accessToken,
             item_id = itemId,
             institution_id = institution.id,
-            user_id = Guid.Empty,
+            user_id = userId,
             created_at = DateTime.UtcNow
         };
 
@@ -86,10 +91,13 @@ public class PlaidController : ControllerBase
     [HttpDelete("[action]/{bankId}")]
     public async Task<IActionResult> RemoveBank(int bankId)
     {
-        var bank = await _db.BankConnections.FirstOrDefaultAsync(x => x.id == bankId);
+        var userId = UserId;
+
+        var bank = await _db.BankConnections
+            .FirstOrDefaultAsync(x => x.id == bankId && x.user_id == userId);
+
         if (bank == null) return NotFound("Bank not found");
 
-        // Cascade handles accounts + transactions via EF config
         _db.BankConnections.Remove(bank);
         await _db.SaveChangesAsync();
 
@@ -102,7 +110,11 @@ public class PlaidController : ControllerBase
     [HttpGet("[action]/{bankId}")]
     public async Task<IActionResult> SyncBank(int bankId)
     {
-        var bank = await _db.BankConnections.FirstOrDefaultAsync(x => x.id == bankId);
+        var userId = UserId;
+
+        var bank = await _db.BankConnections
+            .FirstOrDefaultAsync(x => x.id == bankId && x.user_id == userId);
+
         if (bank == null) return NotFound("Bank not found");
 
         var result = await SyncBankAsync(bank);
@@ -115,9 +127,14 @@ public class PlaidController : ControllerBase
     [HttpGet("[action]")]
     public async Task<IActionResult> SyncAllBanks()
     {
-        var banks = await _db.BankConnections.ToListAsync();
+        var userId = UserId;
+
+        var banks = await _db.BankConnections
+            .Where(b => b.user_id == userId)
+            .ToListAsync();
 
         var results = new List<object>();
+
         foreach (var bank in banks)
         {
             var result = await SyncBankAsync(bank);
@@ -128,11 +145,10 @@ public class PlaidController : ControllerBase
     }
 
     // =========================
-    // FULL SYNC (ACCOUNTS + TRANSACTIONS)
+    // FULL SYNC
     // =========================
     private async Task<object> SyncBankAsync(BankConnection bank)
     {
-        // ---- ACCOUNTS ----
         var plaidAccounts = await _plaid.GetAccountsAsync(bank.access_token);
 
         var existingAccounts = await _db.BankAccounts
@@ -142,11 +158,9 @@ public class PlaidController : ControllerBase
         var existingMap = existingAccounts.ToDictionary(a => a.account_id);
         var plaidIds = plaidAccounts.Select(a => a.account_id).ToHashSet();
 
-        // Remove closed/removed accounts
         var toRemove = existingAccounts.Where(a => !plaidIds.Contains(a.account_id)).ToList();
         _db.BankAccounts.RemoveRange(toRemove);
 
-        // Upsert accounts
         foreach (var acc in plaidAccounts)
         {
             if (existingMap.TryGetValue(acc.account_id, out var existing))
@@ -169,12 +183,10 @@ public class PlaidController : ControllerBase
 
         await _db.SaveChangesAsync();
 
-        // Reload account map for transaction linking
         var accountsMap = await _db.BankAccounts
             .Where(a => a.bank_connection_id == bank.id)
             .ToDictionaryAsync(a => a.account_id, a => a.id);
 
-        // ---- TRANSACTIONS ----
         var txResult = await SyncTransactionsAsync(bank, accountsMap);
 
         bank.transactions_cursor = txResult.cursor;
@@ -406,5 +418,4 @@ public class PlaidController : ControllerBase
     }
 }
 
-    public record ExchangeRequest(string public_token);
-//public record ExchangeRequest(string public_token, Guid user_id);
+public record ExchangeRequest(string public_token);

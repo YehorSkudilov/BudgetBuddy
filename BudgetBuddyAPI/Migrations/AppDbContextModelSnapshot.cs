@@ -17,7 +17,7 @@ namespace BudgetBuddyAPI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.6")
+                .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -190,6 +190,35 @@ namespace BudgetBuddyAPI.Migrations
                     b.ToTable("TransactionPaymentMeta");
                 });
 
+            modelBuilder.Entity("BudgetBuddyAPI.User", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("created_at")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("email")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("Institution", b =>
                 {
                     b.Property<int>("id")
@@ -358,7 +387,15 @@ namespace BudgetBuddyAPI.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("BudgetBuddyAPI.User", "user")
+                        .WithMany("bank_connections")
+                        .HasForeignKey("user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("institution");
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("BudgetBuddyAPI.BankAccount", b =>
@@ -476,6 +513,11 @@ namespace BudgetBuddyAPI.Migrations
             modelBuilder.Entity("BudgetBuddyAPI.BankAccount", b =>
                 {
                     b.Navigation("transactions");
+                });
+
+            modelBuilder.Entity("BudgetBuddyAPI.User", b =>
+                {
+                    b.Navigation("bank_connections");
                 });
 
             modelBuilder.Entity("Institution", b =>
