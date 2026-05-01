@@ -60,14 +60,16 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
 
     private async Task OpenWebView()
     {
-        // Fetch token in parallel with showing the webview
         var tokenTask = Task.Run(() => ApiCommunicators.Plaid.CreateLinkTokenAsync());
 
         await MainThread.InvokeOnMainThreadAsync(() =>
-            WebViewBorder.IsVisible = true);
+        {
+            // Navigate back to plaid.html from about:blank BEFORE showing
+            XWebView.EvaluateJavaScriptAsync("window.location.href = 'plaid.html'");
+            WebViewBorder.IsVisible = true;
+        });
 
         _plaidToken = await tokenTask;
-
         if (string.IsNullOrEmpty(_plaidToken))
         {
             Debug.WriteLine("Failed to get Plaid token");
@@ -75,7 +77,6 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
             return;
         }
 
-        // If JS already fired "ready" before token was fetched, inject now
         if (_plaidReady)
             await InjectToken();
     }
@@ -85,16 +86,16 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
         _plaidToken = null;
         _plaidReady = false;
 
-        await MainThread.InvokeOnMainThreadAsync(async () =>
+        await MainThread.InvokeOnMainThreadAsync(() =>
         {
+            WebViewBorder.IsVisible = false;
+
             try
             {
-                // Reload so next open gets a clean page with fresh Plaid SDK state
-                await XWebView.EvaluateJavaScriptAsync("window.location.reload()");
+                // Navigate to blank immediately — no visible flash on next open
+                XWebView.EvaluateJavaScriptAsync("window.location.href = 'about:blank'");
             }
-            catch { /* ignore if page is already blank */ }
-
-            WebViewBorder.IsVisible = false;
+            catch { /* ignore */ }
         });
     }
 
