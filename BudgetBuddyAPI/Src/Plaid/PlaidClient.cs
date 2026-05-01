@@ -21,7 +21,7 @@ public class PlaidClient
         _http = http;
         _clientId = config["Plaid:ClientId"]!;
         _secret = config["Plaid:Secret"]!;
-        _http.BaseAddress = new Uri("https://sandbox.plaid.com");
+        _http.BaseAddress = new Uri("https://production.plaid.com");
     }
 
     // =========================
