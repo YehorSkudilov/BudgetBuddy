@@ -37,15 +37,10 @@
             IconHeightRequest="30"
             IconPadding="8" />
 
-        <Border x:Name="WebViewBorder"
-                IsVisible="False"
-                StrokeThickness="0"
-                Margin="0,0,0,40"
-                Grid.RowSpan="4">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="20"/>
-            </Border.StrokeShape>
-            <HybridWebView x:Name="XWebView" />
-        </Border>
+        <local:PlaidLinkWebView
+    x:Name="PlaidLink"
+    Grid.RowSpan="4"
+    LinkSucceeded="PlaidLink_LinkSucceeded"
+    LinkClosed="PlaidLink_LinkClosed" />
     </Grid>
 </local:CContentView>

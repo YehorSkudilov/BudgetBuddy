@@ -8,39 +8,80 @@
 </head>
 <body>
     <script>
+        let plaidHandler = null;
+
         function sendToMAUI(type, payload) {
-            window.HybridWebView.SendRawMessage(JSON.stringify({ type, ...payload }));
+            try {
+                window.HybridWebView.SendRawMessage(JSON.stringify({ type, ...payload }));
+            } catch (e) {
+                console.error("sendToMAUI failed:", e);
+            }
         }
 
-        window.onerror = function (msg, _url, line, col) {
-            sendToMAUI("exit", { error: msg, line, col });
+        window.onerror = function (msg, _url, line, col, errorObj) {
+            sendToMAUI("exit", { error: msg, line, col, stack: errorObj?.stack });
         };
 
+        window.addEventListener("unhandledrejection", function (event) {
+            sendToMAUI("exit", { error: "Unhandled rejection: " + event.reason });
+        });
+
+        function destroyPlaid() {
+            if (plaidHandler) {
+                try { plaidHandler.destroy(); } catch (_) { }
+                plaidHandler = null;
+            }
+        }
+
         function startPlaid(linkToken) {
+            // Always destroy before creating — safe to call even on first run
+            destroyPlaid();
+
             try {
                 if (!window.Plaid) throw new Error("Plaid SDK not loaded");
 
-                Plaid.create({
+                plaidHandler = Plaid.create({
                     token: linkToken,
-                    onSuccess: (public_token) => sendToMAUI("success", { public_token }),
-                    onExit: (err, metadata) => sendToMAUI("exit", { err, metadata })
-                }).open();
+                    onSuccess: (public_token) => {
+                        plaidHandler = null;
+                        sendToMAUI("success", { public_token });
+                    },
+                    onExit: (err, metadata) => {
+                        plaidHandler = null;
+                        sendToMAUI("exit", { err, metadata });
+                    }
+                });
+
+                plaidHandler.open();
 
             } catch (ex) {
+                plaidHandler = null;
                 sendToMAUI("exit", { error: ex.message });
             }
         }
 
-        // Poll until Plaid SDK is ready, then tell C# we're good
+        // Signal C# once both dependencies are ready
         window.addEventListener("load", function () {
+            const MAX_ATTEMPTS = 100;
             let attempts = 0;
+
             const t = setInterval(() => {
                 attempts++;
+
                 if (window.HybridWebView && window.Plaid?.create) {
                     clearInterval(t);
-                    window.HybridWebView.SendRawMessage(JSON.stringify({ type: "ready" }));
+                    sendToMAUI("ready", {});
+                    return;
                 }
-                if (attempts > 100) clearInterval(t); // 5s timeout
+
+                if (attempts >= MAX_ATTEMPTS) {
+                    clearInterval(t);
+                    sendToMAUI("exit", {
+                        error: "Timeout waiting for dependencies",
+                        hybridWebViewLoaded: !!window.HybridWebView,
+                        plaidLoaded: !!window.Plaid?.create
+                    });
+                }
             }, 50);
         });
     </script>

@@ -106,6 +106,9 @@
     <MauiXaml Update="Src\Views\PaymentAlertsView\PaymentAlertsView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Src\Views\PlaidLinkWebView\PlaidLinkWebView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Src\Views\RangePickerView\RangePickerView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
@@ -131,6 +134,9 @@
     </Compile>
     <Compile Update="Src\Views\PaymentAlertsView\PaymentAlertsView.xaml.cs">
       <DependentUpon>PaymentAlertsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Src\Views\PlaidLinkWebView\PlaidLinkWebView.xaml.cs">
+      <DependentUpon>PlaidLinkWebView.xaml</DependentUpon>
     </Compile>
     <Compile Update="Src\Views\RangePickerView\RangePickerView.xaml.cs">
       <DependentUpon>RangePickerView.xaml</DependentUpon>
