@@ -27,8 +27,8 @@
     <!-- App Identifier -->
     <ApplicationId>com.yehorskudilov.budgetbuddy</ApplicationId>
     <!-- Versions -->
-		<ApplicationDisplayVersion>1.0.65</ApplicationDisplayVersion>
-		<ApplicationVersion>1000065</ApplicationVersion>
+		<ApplicationDisplayVersion>1.0.68</ApplicationDisplayVersion>
+		<ApplicationVersion>1000068</ApplicationVersion>
     <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
     <WindowsPackageType>None</WindowsPackageType>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
@@ -70,6 +70,9 @@
   </ItemGroup>
   <ItemGroup>
     <MauiXaml Update="Src\CAppShell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Src\Pages\LoadingPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Src\Pages\BanksPage.xaml">
@@ -125,6 +128,9 @@
     </MauiXaml>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Src\Pages\LoadingPage.xaml.cs">
+      <DependentUpon>LoadingPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Src\Pages\TransactionsPage.xaml.cs">
       <DependentUpon>TransactionsPage.xaml</DependentUpon>
     </Compile>

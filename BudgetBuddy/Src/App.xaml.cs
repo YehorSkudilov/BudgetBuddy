@@ -10,16 +10,25 @@ namespace BudgetBuddy
             Application.Current.UserAppTheme = AppTheme.Dark;
         }
 
-        protected override async void OnStart()
-        {
-            base.OnStart();
-
-            await AuthStore.InitializeAsync();
-        }
-
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new CAppShell());
+            var window = new Window(new LoadingPage()); // temporary page
+
+            InitializeAsync(window);
+
+            return window;
+        }
+
+        private async void InitializeAsync(Window window)
+        {
+            // 🔥 Load token BEFORE real UI
+            await AuthStore.InitializeAsync();
+
+            // ✅ Now safe to load your app
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                window.Page = new CAppShell();
+            });
         }
     }
 }
