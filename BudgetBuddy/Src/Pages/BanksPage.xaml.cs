@@ -42,7 +42,6 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
 
     private async void Add_Clicked(object sender, EventArgs e)
     {
-
         await PlaidLinkWebView.OpenAsync();
     }
 
