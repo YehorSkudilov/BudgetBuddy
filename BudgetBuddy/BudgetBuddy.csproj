@@ -67,7 +67,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.60" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.7" />
-    <PackageReference Include="Plaid.LinkKit" Version="1.0.18" />
   </ItemGroup>
   <ItemGroup>
     <MauiXaml Update="Src\CAppShell.xaml">
@@ -150,5 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AppSkeleton\AppSkeleton\AppSkeleton.csproj" />
+    <ProjectReference Include="..\PlaidLinkAndroid\PlaidLinkAndroid.csproj" />
   </ItemGroup>
+
 </Project>
