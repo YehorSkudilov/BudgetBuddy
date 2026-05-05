@@ -4,6 +4,4 @@
     <Deploy Solution="Debug|*" />
   </Project>
   <Project Path="BudgetBuddyAPI/BudgetBuddyAPI.csproj" />
-  <Project Path="PlaidLink/PlaidLink.csproj" Id="f1694613-f7bc-45cf-a180-c8aae2be09d1" />
-  <Project Path="PlaidLinkAndroid/PlaidLinkAndroid.csproj" Id="3287fe7f-5b20-49e1-98fa-caf62c456236" />
 </Solution>

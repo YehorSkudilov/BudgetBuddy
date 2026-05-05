@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using PlaidLink;
 namespace BudgetBuddy;
 public partial class BanksPage : CContentView, INotifyPropertyChanged
 {
@@ -43,9 +42,8 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
 
     private async void Add_Clicked(object sender, EventArgs e)
     {
-        PlaidLink.Plaid.Initialize(await ApiCommunicators.Plaid.CreateLinkTokenAsync());
-        PlaidLink.Plaid.Open();
-        //await PlaidLink.OpenAsync();
+
+        await PlaidLinkWebView.OpenAsync();
     }
 
     private async void PlaidLink_LinkSucceeded(object? sender, string publicToken)
