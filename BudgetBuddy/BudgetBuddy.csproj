@@ -155,7 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AppSkeleton\AppSkeleton\AppSkeleton.csproj" />
-    <ProjectReference Include="..\PlaidLinkAndroid\PlaidLinkAndroid.csproj" />
+    <ProjectReference Include="..\PlaidLink\PlaidLink.csproj" />
   </ItemGroup>
 
 </Project>

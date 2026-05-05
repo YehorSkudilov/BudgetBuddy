@@ -38,7 +38,7 @@
             IconPadding="8" />
 
         <local:PlaidLinkWebView
-    x:Name="PlaidLink"
+    x:Name="PlaidLinkWebView"
     Grid.RowSpan="4"
     LinkSucceeded="PlaidLink_LinkSucceeded"
     LinkClosed="PlaidLink_LinkClosed" />

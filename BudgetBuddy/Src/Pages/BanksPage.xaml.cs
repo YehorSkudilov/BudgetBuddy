@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using PlaidLink;
 namespace BudgetBuddy;
 public partial class BanksPage : CContentView, INotifyPropertyChanged
 {
@@ -34,13 +35,18 @@ public partial class BanksPage : CContentView, INotifyPropertyChanged
 
     public override async void OnAppearing()
     {
-        if (PlaidLink.IsVisible)
-            await PlaidLink.CloseAsync();
+        if (PlaidLinkWebView.IsVisible)
+            await PlaidLinkWebView.CloseAsync();
 
         await LoadBanksAsync();
     }
 
-    private async void Add_Clicked(object sender, EventArgs e) => await PlaidLink.OpenAsync();
+    private async void Add_Clicked(object sender, EventArgs e)
+    {
+        PlaidLink.Plaid.Initialize(await ApiCommunicators.Plaid.CreateLinkTokenAsync());
+        PlaidLink.Plaid.Open();
+        //await PlaidLink.OpenAsync();
+    }
 
     private async void PlaidLink_LinkSucceeded(object? sender, string publicToken)
     {
